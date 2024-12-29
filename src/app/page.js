@@ -31,7 +31,7 @@ const handleClick = e => {
       <p className = 'text-4xl font-bold text-blue-400 md1:text-4xl ' > NEXT GEN</p>
 
       <div className = ' flex flex-col items-end justify-end gap-2 md1:flex-row' >
- <input className = 'h-10  border-2 outline-none rounded-sm border-blue-400 p-2 mx-4  'type ='text'
+ <input className = 'h-10 w-72 border-2 outline-none rounded-sm border-blue-400 p-2 mx-4  'type ='text'
   placeholder = 'Enter name' onChange = {(event)=>{
   setUsername(event.target.value)
   
