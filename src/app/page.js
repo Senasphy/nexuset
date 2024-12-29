@@ -1,6 +1,7 @@
 "use client"
 import React, {useState, useRef } from 'react'
-import './/page.css'
+import './/page.css';
+import {faBookOpen} from 'react-icons/fa';
 
 
 import DisplayData from './app.js'
@@ -26,7 +27,7 @@ const handleClick = e => {
 
   return(
     !showBoard ? (
-    <div className='flex flex-col justify-center h-screen  items-center gap-4'>
+    <div className='flex flex-col justify-center min-h-screen  items-center gap-4 overflow-hidden'>
       <p className = 'text-4xl font-bold text-blue-400 md1:text-4xl ' > NEXT GEN</p>
 
       <div className = ' flex flex-col items-end justify-end gap-2 md1:flex-row' >

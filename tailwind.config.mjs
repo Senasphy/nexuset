@@ -56,7 +56,7 @@ export default {
   			sm: 'calc(var(--radius) - 4px)'
   		},
 		screens:{
-			md1: '340px',
+			md1: '430px',
 			md2: '480px',
 			lg1: '950px'
 		
