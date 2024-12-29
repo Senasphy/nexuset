@@ -26,7 +26,7 @@ const handleClick = e => {
 
   return(
     !showBoard ? (
-    <div className='flex flex-col justify-center h-auto max-h-screen items-center gap-4 overflow-hidden'>
+    <div className='flex flex-col justify-center min-h-screen items-center gap-4 overflow-hidden'>
       <p className = 'text-6xl font-bold text-blue-400 md1:text-4xl ' > NEXT GEN</p>
 
       <div className = ' flex flex-col items-end justify-end gap-2 md1:flex-row' >

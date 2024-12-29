@@ -95,7 +95,7 @@ function handleSubmit(){
   handleResetQuestion();  
 }
 function DisplayQuestion(){
-    return(<div className = 'flex flex-col justify-center items-center gap-8 mb-4 w-screen'>
+    return(<div className = 'flex flex-col justify-center items-center gap-8 mb-4 w-screen mt-4'>
       <div className = 'lg1:w-1/2 md2:w-3/4 border-2 h-40 p-2 rounded mx-4 mt-4 flex items-center'>
       <p className='text-center text-lg md2:text-xl'>
       {data[index].question}</p></div>
@@ -108,7 +108,7 @@ function DisplayQuestion(){
 
       return(
       <>
-  <Button className = ' h-12 w-56 md1:w-40 px-8 rounded mx-2 md2:text-xl 'key = {item} variant =
+  <Button className = ' h-12 w-56 md1:w-40 text-xl px-8 rounded mx-2 md2:text-xl 'key = {item} variant =
   {variant} onClick = {()=>handleAnswer(item,index)}> {handleOption(index)}: {item}  </Button> 
 
       </>
