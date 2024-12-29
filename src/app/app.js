@@ -120,7 +120,7 @@ function DisplayQuestion(){
 }
 
   return(
-    <div className = 'overflow-hidden min-h-screen flex flex-col justify-center items-center gap-4 text-lg md2:text-xl'>
+    <div className = 'overflow-hidden max-h-screen h-auto flex flex-col justify-center items-center gap-4 text-lg md2:text-xl'>
  {data.length >  0? <DisplayQuestion />: <div className = 'loading-spinner'>...Loading</div>} 
 
  <div className = 'flex gap-2 flex-wrap items-center justify-center'>
