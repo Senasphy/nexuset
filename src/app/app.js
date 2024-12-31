@@ -97,7 +97,7 @@ function handleSubmit(){
 function DisplayQuestion(){
     return(<div className = 'flex flex-col justify-center items-center gap-8 mb-4 w-screen'>
       <div className = 'lg1:w-1/2 md2:w-3/4 border-2 h-40 p-2 rounded mx-4 mt-4 flex items-center'>
-      <p className='text-center text-lg md2:text-xl'>
+      <p className='text-center text-xl md2:text-2xl'>
       {data[index].question}</p></div>
     <div key = {index} className =
      'flex item-center justify-center flex-col gap-4 md: grid md1:grid-cols-2 md1: grid-rows-2 md2:text-xl ' > 
@@ -108,7 +108,7 @@ function DisplayQuestion(){
 
       return(
       <>
-  <Button className = ' h-12 w-56 md1:w-40 text-xl px-8 rounded mx-2 md2:text-xl 'key = {item} variant =
+  <Button className = 'py-6 text-lg px-8  rounded mx-2 md2:text-xl 'key = {item} variant =
   {variant} onClick = {()=>handleAnswer(item,index)}> {handleOption(index)}: {item}  </Button> 
 
       </>
@@ -120,20 +120,20 @@ function DisplayQuestion(){
 }
 
   return(
-    <div className = 'overflow-hidden max-h-screen h-auto flex flex-col justify-center items-center gap-4 text-lg md2:text-xl'>
+    <div className = 'overflow-hidden max-h-screen h-screen flex flex-col justify-center mt-4 items-center gap-4 text-lg md2:text-xl'>
  {data.length >  0? <DisplayQuestion />: <div className = 'loading-spinner'>...Loading</div>} 
 
  <div className = 'flex gap-2 flex-wrap items-center justify-center'>
-<Button className = 'w-24 h-10 text-lg font-light md2:text-xl' variant = 'custom' 
+<Button className = 'px-8 py-6 text-lg font-light md2:text-xl' variant = 'custom' 
 onClick = {handleNextQuestion} 
  disabled = {index == data.length - 1}>Next</Button>
- <Button className = 'w-24 h-10 text-lg font-light md2:text-xl'  variant = 'custom' 
+ <Button className = 'px-8 py-6 text-lg font-light md2:text-xl'  variant = 'custom' 
  onClick = {handlePreviousQuestion}
   disabled = {index == 0}>Previous</Button>
- <Button className = 'w-24 h-10 text-lg font-light md2:text-xl '  variant = 'destructive' 
+ <Button className = 'px-8 py-6 text-lg font-light md2:text-xl '  variant = 'destructive' 
   onClick = {handleResetQuestion} 
  disabled = {index == 0}>Reset</Button>
- {index === data.length - 1 ? <Button onClick = {handleSubmit}>Submit</Button> : null}
+ {index === data.length - 1 ? <Button className = "py-6 px-8 text-lg" onClick = {handleSubmit}>Submit</Button> : null}
  </div> 
   <div> Score: {score} </div>   
 
