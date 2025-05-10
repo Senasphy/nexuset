@@ -8,7 +8,7 @@
         projectId: "nextspelling", 
         storageBucket: "nextspelling.firebasestorage.app", 
         messagingSenderId: "520937149732", 
-        appId: "1:520937149732:web:321faf944e6f8dd1c20fb1",  
+        appId: "1:11520937149732:web:321faf944e6f8dd1c20fb1",  
         measurementId: "G-ZBPF3KSWLP"
 
     };

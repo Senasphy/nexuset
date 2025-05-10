@@ -12,7 +12,7 @@ const buttonVariants = cva(
         default:
           "bg-primary text-primary-foreground shadow hover:bg-primary/90",
         destructive:
-          "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
+          "bg-[#FF7799] text-destructive-foreground shadow-sm hover:bg-[#EE99A1] transition duration-300 transform hover:scale-105",
         outline:
           "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
         secondary:
@@ -20,7 +20,11 @@ const buttonVariants = cva(
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
         custom:
-        "bg-blue-400 hover:opacity-75 shadow-sm text-white "
+        "bg-[#D8D8FF] hover:opacity-75 shadow-sm transition duration-300 transform ",
+        correct:
+        "bg-[#C0F1DC] hover:opacity-75 shadow-sm",
+        scroll:
+        "bg-[#F3EBE4] rounded-full capitalize py-2 px-4 text-sm  transition-transform hover:opacity-75 hover:scale-105"
       },
       size: {
         default: "h-9 px-4 py-2",

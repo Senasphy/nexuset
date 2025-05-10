@@ -1,41 +1,22 @@
-"use client"
-import React, {useState, useRef } from 'react'
-import './/page.css';
-
-
-import DisplayData from './app.js'
-
-export default function App(){
-  const [showBoard, setShowBoard] = useState(false);
-  const[username, setUsername] = useState(null)
-  const buttonRef = useRef(null)
-const handleClick = e => {
-    if(e.key == "Enter"){
-      buttonRef.current.click();
-    }
-  }
-
-  function handleLogin(){
-    if(username === null){
-            alert("Username can not be empty!")
-    }
-    else{
-    setShowBoard(!false)}
-  }
-
-
-  return(
-    !showBoard ? (
-    <div className='flex flex-col justify-center min-h-screen items-center gap-4 overflow-hidden'>
-      <p className = 'text-6xl font-bold text-blue-400 md1:text-4xl ' > NEXT GEN</p>
-
-      <div className = ' flex flex-col items-end justify-end gap-2 md1:flex-row' >
- <input className = 'h-10 w-72 border-2 outline-none rounded-sm border-blue-400 p-2 mx-4  'type ='text'
-  placeholder = 'Enter name' onChange = {(event)=>{
-  setUsername(event.target.value)
+'use client'
+import {useEffect, useState} from 'react'
+import {useAuth} from '../context/AuthContext'
+import {useRouter} from 'next/navigation'
+export default function Home(){
+  const router = useRouter() 
+  const {user, loading} = useAuth
   
+  useEffect(()=>{
+    if (!loading && !user){
+      router.push('/login')
+    }
 
- }} onKeyDown = {handleClick}></input>  
- <button ref = {buttonRef} className = 'bg-blue-400 outline-none rounded-sm mr-5 hover:opacity-75 transition duration-60  px-2 py-1 h-10 w-24'
- onClick = {handleLogin}>Join</button></div></div>) : <DisplayData username = {username}/>)
-} 
+  }, [loading, user, router])
+  if (loading){
+      return <div className = 'h-screen w-full flex flex-col justify-center items-center gap-2'>
+        <h1 className = 'text-2xl font-bold'>Loading...</h1>
+        <p className = 'text-lg'>Please wait while we load your data</p>
+      </div>
+  }
+  return  user ? children : null
+}
