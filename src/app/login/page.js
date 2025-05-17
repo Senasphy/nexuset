@@ -1,22 +1,25 @@
 'use client'
 import {useState} from 'react'
-import {useAuth} from '../../context/AuthContext'
+import {useAuth} from '@/context/AuthContext'
 import {useRouter} from 'next/navigation'
 import LoginForm from '@/components/login-form'
 import { Button } from '@/components/ui/button';
+import {Loader} from 'lucide-react'
 
 
 export default function Login(){
-    const {login} = useAuth()
+    const {login,loading} = useAuth()
+    const [actionLoading, setActionLoading] = useState(false)
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
     const router = useRouter()
     
     const handleLogin = async () =>{
+        setActionLoading(true)
         try{
             await login(email, password)
-            router.push('../category')
+            router.push('../categories')
         } catch(err){
             const errMap = {'auth/invalid-email': 'Please enter a valid email address',
         'auth/user-not-found': 'You have not signed up with this email',
@@ -24,13 +27,20 @@ export default function Login(){
         'auth/invalid-credential': 'Email or password is incorrect',
         'auth/too-many-requests': 'Too many attempts, please try again later',}
         setError(errMap[err.code] || err.message)
+        }finally{
+            setActionLoading(false)
         }
         
     }
-
-    return(
-        <div className = 'h-screen w-full flex items-center justify-center flex-col gap-4 text-lg'>
+    if(actionLoading || loading) return(
+ <div className='flex gap-2 w-full h-screen text-lg items-center justify-center '>
+    <Loader className='animate-spin'/>Loading...
+    </div>
+)
+    else{return(
+        <div className = 'h-screen w-full flex items-center justify-center flex-col gap-4 '>
         <h1 className='text-2xl font-bold'>LOGIN</h1>
+        <div className='text-lg w-full'>
          <LoginForm email = {email}
                     setEmail = {setEmail}
                     password = {password}
@@ -38,13 +48,14 @@ export default function Login(){
                     onSubmit = {handleLogin}
                     />
         {error && <p className = 'text-red-500'>{error}</p>}
-         <div className='flex gap-2 justify-center items-center'>
+        </div>
+         <div className='flex text-md gap-2 justify-center items-center'>
             <p>Create new account?</p>
-            <Button variant = 'link' className = 'text-blue-500 text-lg' onClick = {() => router.push('/sign-up')}>Sign Up</Button>
+            <Button variant = 'link' className = 'text-blue-500 text-md' onClick = {() => router.push('/sign-up')}>Sign Up</Button>
          </div>
          
                     </div>
        
-    )
+    )}
 
 }

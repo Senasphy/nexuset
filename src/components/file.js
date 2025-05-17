@@ -61,7 +61,7 @@ export default function DisplayData({ username }) {
   
 
   function handleDifficulty(level){
-      setDifficulty(level )
+      setDifficulty(level)
       const filteredData = copyData.filter((item) => item.difficulty === level);
       setData(filteredData);
     }

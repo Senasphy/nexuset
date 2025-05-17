@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import SignUpForm from '@/components/signup-form';
 
@@ -59,6 +59,12 @@ export default function SignUp() {
         setUsername={setUsername}
         onSubmit={handleSignUp}
       />
+      <div className='flex gap-4' >Already have an account? <p
+        className="text-blue-500 cursor-pointer hover:underline"
+        onClick={() => router.push('/login')}>Login</p>
+        </div>
+      
+        
     </div>
   );
 }

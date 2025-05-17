@@ -80,6 +80,7 @@ export function AuthProvider({ children }) {
         email,
         username,
         createdAt: new Date().toISOString(),
+  
       })
       await setDoc(doc(db, 'usernames' , username),{uid: user.uid})
       setUsername(username)
@@ -107,6 +108,7 @@ export function AuthProvider({ children }) {
     }
     }
   const login = async (email, password) => {
+   
     const userCredentials = await signInWithEmailAndPassword(auth, email, password);
     const user = userCredentials.user;  
     const userDoc = await getDoc(doc(db, 'users', user.uid));
@@ -116,9 +118,11 @@ export function AuthProvider({ children }) {
     else{
       setUsername(null)
     }
+   
     return userCredentials
+     
   }
-  const value = { user, loading, signUp, login,logout };
+  const value = { user, loading, signUp, login,logout, username };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

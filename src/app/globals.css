@@ -65,3 +65,18 @@ body {
     --chart-5: 340 75% 55%;
   }
 }
+/* styles/globals.css */
+* {
+  -webkit-tap-highlight-color: transparent; /* Removes tap highlight */
+  -webkit-touch-callout: none; /* Disables long-press menu */
+  user-select: none; /* Prevents text selection triggering keyboard */
+}
+
+/* Target interactive elements */
+button,
+div,
+a,
+[role="button"] {
+  touch-action: manipulation; /* Treats taps as clicks, not input gestures */
+  outline: none; /* Prevents focus outline triggering keyboard */
+}

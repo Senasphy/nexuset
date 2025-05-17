@@ -30,7 +30,7 @@ export default function SignUpForm({
           onChange={(e) => setUsername(e.target.value)}
           placeholder="Enter Username"
           required
-          className="mt-1"
+          className="mt-1 h-12"
         />
       </div>
       <div>
@@ -44,7 +44,7 @@ export default function SignUpForm({
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Enter your email"
           required
-          className="mt-1"
+          className="mt-1 h-12"
         />
       </div>
       <div>
@@ -58,7 +58,7 @@ export default function SignUpForm({
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Enter your password"
           required
-          className="mt-1"
+          className="mt-1 h-12"
         />
       </div>
       <Button variant= 'custom' type="submit" className="w-full h-12 text-lg">

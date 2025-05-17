@@ -5,19 +5,19 @@
 
     const firebaseConfig = {
 
-        apiKey: "AIzaSyAjARe8t_F4WV9zwehD7uA4J4B1pA2iB9s",
+        apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY, 
+        authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
       
-        authDomain: "nextspelling.firebaseapp.com",
+        projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
       
-        projectId: "nextspelling",
+        storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+
+        messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+
       
-        storageBucket: "nextspelling.firebasestorage.app",
-      
-        messagingSenderId: "520937149732",
-      
-        appId: "1:520937149732:web:321faf944e6f8dd1c20fb1",
-      
-        measurementId: "G-ZBPF3KSWLP"
+        appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+
+        measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
       
       };
       
