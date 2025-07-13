@@ -6,17 +6,14 @@ import { useRouter } from 'next/navigation';
 import SignUpForm from '@/components/signup-form';
 
 export default function SignUp() {
-  const authContext = useAuth();
-  const { signUp, loading } = authContext;
+  const {signUp,loading, signInWithGoogleRedirect} = useAuth();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [username, setUsername] = useState('');
   const router = useRouter();
 
-  console.log('useAuth:', useAuth);
-  console.log('authContext:', authContext);
-  console.log('signUp function:', signUp);
 
   if (loading) return <div>Loading...</div>;
 
@@ -58,6 +55,7 @@ export default function SignUp() {
         username={username}
         setUsername={setUsername}
         onSubmit={handleSignUp}
+        signInWithGoogleRedirect = {signInWithGoogleRedirect}
       />
       <div className='flex gap-4' >Already have an account? <p
         className="text-blue-500 cursor-pointer hover:underline"

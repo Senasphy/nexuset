@@ -7,17 +7,14 @@ import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut,
+  signInWithRedirect,
+  GoogleAuthProvider,
+  getRedirectResult
 } from 'firebase/auth';
 
 import {doc, setDoc, getDoc} from 'firebase/firestore';
 
-// Debug imports
-console.log('Firebase auth imports:', {
-  createUserWithEmailAndPassword,
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
-});
-console.log('Auth imported:', auth);
+
 
 const AuthContext = createContext();
 
@@ -38,8 +35,6 @@ export function AuthProvider({ children }) {
       return;
     }
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-
-      console.log('Auth state changed:', currentUser);
       if(currentUser){
           try{
             const userDoc = await getDoc(doc(db,'users',currentUser.uid));
@@ -58,7 +53,7 @@ export function AuthProvider({ children }) {
       }
       setUser(currentUser);
       setLoading(false);
-          });
+             });
     return () => unsubscribe();
   }, []);
 
@@ -118,11 +113,20 @@ export function AuthProvider({ children }) {
     else{
       setUsername(null)
     }
-   
+   console.log('User logged in with the login function:', user); 
     return userCredentials
      
   }
-  const value = { user, loading, signUp, login,logout, username };
+
+    const provider = new GoogleAuthProvider();
+   const signInWithGoogleRedirect = () => {
+  signInWithRedirect(auth, provider);
+};
+
+// Handle redirect result
+
+
+  const value = { user, loading, signUp, login,logout, username, signInWithGoogleRedirect};
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

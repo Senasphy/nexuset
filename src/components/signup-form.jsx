@@ -11,6 +11,7 @@ export default function SignUpForm({
   username,
   setUsername,
   onSubmit,
+  signInWithGoogleRedirect,
 }) {
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -64,6 +65,7 @@ export default function SignUpForm({
       <Button variant= 'custom' type="submit" className="w-full h-12 text-lg">
         Sign Up
       </Button>
+      <Button onClick = {()=>signInWithGoogleRedirect()}>Sign up with Google</Button>
     </form>
   );
 }
