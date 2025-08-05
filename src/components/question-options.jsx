@@ -1,15 +1,14 @@
 import {useState} from 'react'
 import { handleOption} from '@/lib/helpers'
 import {Button} from '@/components/ui/button'
+import useQuizStore from '@/stores/quizStore'
 
 
 
-
-const QuestionOptions = ({questions, index, setIndex, selectedOption, setSelectedOption}) => {
+const QuestionOptions = ({isDone, setIsDone, questions, index, selectedOption, setSelectedOption, score, setScore}) => {
   const [correctOption, setCorrectOption] = useState(null)
-  const [isDone, setIsDone] = useState([])
-  const [score, setScore] = useState(0)
-
+  const {currentScore} = useQuizStore();
+  const incrementScore= useQuizStore((state)=>state.incrementScore)
   function handleAnswer(data, item, optionIndex, index) {
     const isCorrect = data[index].correctAnswer === item;
     setSelectedOption(optionIndex);
@@ -17,10 +16,9 @@ const QuestionOptions = ({questions, index, setIndex, selectedOption, setSelecte
     
    
     if (!isDone.includes(data[index].id)) {
-    
+      console.log(typeof setScore) 
       if (isCorrect) {
-        setScore((prevScore) => prevScore + 1);
-         
+        incrementScore(); 
 
       }
       setIsDone((prevState) => [...prevState, data[index].id]);
@@ -34,7 +32,7 @@ const QuestionOptions = ({questions, index, setIndex, selectedOption, setSelecte
 
          <div
                   key={questions[index].id}
-                  className="flex flex-col px-[42px] px-16 items-center justify-center
+                  className="flex flex-col   items-center justify-center
                    gap-4 md2:text-xl mb-4 w-full"
                 >
                 
@@ -48,8 +46,8 @@ const QuestionOptions = ({questions, index, setIndex, selectedOption, setSelecte
                    
                   
                     return (
-                    <Button
-                      className="py-6 text-md h-12 rounded-full mx-2 md2:text-[.9rem] w-full shadow-md"
+                   <Button
+                      className="py-6 text-md h-12 rounded-full  md2:text-[.9rem] w-full shadow-md"
                       key={item}
                       variant={variant}
                       onClick={(e) => {

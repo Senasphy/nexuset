@@ -33,26 +33,31 @@ export default function Login(){
         
     }
     if(actionLoading || loading) return(
- <div className='flex gap-2 w-full h-screen text-lg items-center justify-center '>
-    <Loader className='animate-spin'/>Loading...
+
+ <div className="bg-new-bg bg-cover bg-center flex gap-2 w-full h-screen text-lg items-center justify-center ">
+
+    <Loader className='animate-spin text-white w-8 h-8 ' /> <p className='text-white text-4xl'> Loading...</p>
+
     </div>
+
 )
     else{return(
-        <div className = 'h-screen w-full flex items-center justify-center flex-col gap-4 '>
-        <h1 className='text-2xl font-bold'>LOGIN</h1>
+        <div className = 'bg-new-bg bg-cover bg-center  h-screen w-full flex items-center justify-center flex-col gap-4 '>
+<div className="absolute inset-0 bg-black/50"></div>
+      <div className="relative z-10 text-white">
+        <h1 className='text-2xl text-center font-bold'>LOGIN</h1>
         <div className='text-lg w-full'>
          <LoginForm email = {email}
                     setEmail = {setEmail}
                     password = {password}
-                    setPassword = {setPassword} 
-                    onSubmit = {handleLogin}
-                    />
+                    setPassword = {setPassword} onSubmit = {handleLogin} />
         {error && <p className = 'text-red-500'>{error}</p>}
         </div>
          <div className='flex text-md gap-2 justify-center items-center'>
             <p>Create new account?</p>
             <Button variant = 'link' className = 'text-blue-500 text-md' onClick = {() => router.push('/sign-up')}>Sign Up</Button>
          </div>
+      </div>
          
                     </div>
        

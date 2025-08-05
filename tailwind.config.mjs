@@ -39,7 +39,8 @@ export default {
   				DEFAULT: 'hsl(var(--destructive))',
   				foreground: 'hsl(var(--destructive-foreground))'
   			},
-  			border: 'hsl(var(--border))',
+        custom: 'hsl(var(--border))',
+ 			border: 'hsl(var(--border))',
   			input: 'hsl(var(--input))',
   			ring: 'hsl(var(--ring))',
   			chart: {
@@ -61,7 +62,12 @@ export default {
 			lg1: '950px'
 		
 			
-		}
+		},
+
+    backgroundImage:{
+      'new-bg':"url('/newBg.jpg')",
+    }
+
   	}
   },
   plugins: [require("tailwindcss-animate")],

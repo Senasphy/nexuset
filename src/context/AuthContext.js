@@ -11,14 +11,6 @@ import {
 
 import {doc, setDoc, getDoc} from 'firebase/firestore';
 
-// Debug imports
-console.log('Firebase auth imports:', {
-  createUserWithEmailAndPassword,
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
-});
-console.log('Auth imported:', auth);
-
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
@@ -39,7 +31,6 @@ export function AuthProvider({ children }) {
     }
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
 
-      console.log('Auth state changed:', currentUser);
       if(currentUser){
           try{
             const userDoc = await getDoc(doc(db,'users',currentUser.uid));

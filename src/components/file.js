@@ -48,7 +48,6 @@ export default function DisplayData({ username }) {
     if (snapDoc.exists()){
         const data = snapDoc.data()
         setName(data.username)
-        console.log(user)
         
     }else{
       console.log("User not found")

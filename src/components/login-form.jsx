@@ -16,7 +16,7 @@ export default function LoginForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 w-full px-8">
+    <form onSubmit={handleSubmit} className="space-y-6 w-full px-8 ">
       <div className='w-full'>
         <label htmlFor="email" className="block text-sm font-medium">
         </label>

@@ -24,8 +24,11 @@ const buttonVariants = cva(
         correct:
         "bg-[#C0F1DC] hover:opacity-75 shadow-sm",
         scroll:
-        "bg-[#F3EBE4] rounded-full capitalize py-2 px-4 text-sm  transition-transform hover:opacity-75 hover:scale-105"
+        "bg-[#F3EBE4] rounded-full capitalize py-2 px-4 text-sm  transition-transform hover:opacity-75 hover:scale-105",
+        rounded:
+        "bg-primary w-full min-h-[3rem] rounded-full text-center hover:bg-primary/90  text-primary-foreground text-xl mb-2 flex items-center justify-center"
       },
+
       size: {
         default: "h-9 px-4 py-2",
         sm: "h-8 rounded-md px-3 text-xs",

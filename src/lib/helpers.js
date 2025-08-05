@@ -1,5 +1,6 @@
 import {addDoc} from 'firebase/firestore'
 import {db} from '@/lib/helpers'
+import useQuizStore from '@/stores/quizStore'
  
  
  export function handleOption(idx) {
@@ -18,13 +19,14 @@ import {db} from '@/lib/helpers'
 
 
  export function handleAnswer(data, item, optionIndex, index) {
+    const incrementScore = useQuizStore((state)=> state.incrementScore)
     const isCorrect = data[index].correctAnswer === item;
     setSelectedOption(optionIndex);
     setCorrectOption(isCorrect);
   
     if (!isDone.includes(data[index].id)) {
       if (isCorrect) {
-        setScore((prevScore) => prevScore + 1);
+        incrementScore()
       }
       setIsDone((prevState) => [...prevState, data[index].id]);
     }

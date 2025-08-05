@@ -23,6 +23,7 @@ wght@0,14..32,100..900;1,14..32,100..900&family=Poppins:ital,wght@0,
 1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet" />
       </head>
       <body style={{ fontFamily: " 'Inter', sans-serif" }}>
+
         <AuthProvider>
           <QueryProvider>{children}</QueryProvider></AuthProvider>
       </body>

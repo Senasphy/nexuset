@@ -14,9 +14,6 @@ export default function SignUp() {
   const [username, setUsername] = useState('');
   const router = useRouter();
 
-  console.log('useAuth:', useAuth);
-  console.log('authContext:', authContext);
-  console.log('signUp function:', signUp);
 
   if (loading) return <div>Loading...</div>;
 
