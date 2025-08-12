@@ -2,13 +2,21 @@ import {useState} from 'react'
 import { handleOption} from '@/lib/helpers'
 import {Button} from '@/components/ui/button'
 import useQuizStore from '@/stores/quizStore'
+import useScoreStore from '@/stores/scoreStore'
 
 
-
-const QuestionOptions = ({isDone, setIsDone, questions, index, selectedOption, setSelectedOption, score, setScore}) => {
+const QuestionOptions = ({isDone, setIsDone, questions,  selectedOption, setSelectedOption}) => {
+  const index = useQuizStore((state) => state.index)
   const [correctOption, setCorrectOption] = useState(null)
-  const {currentScore} = useQuizStore();
-  const incrementScore= useQuizStore((state)=>state.incrementScore)
+  
+  const { incrementScore , currentScore} = useScoreStore((state)=> ({
+    incrementScore: state.incrementScore,
+    currentScore: state.currentScore,
+  }))
+
+
+
+
   function handleAnswer(data, item, optionIndex, index) {
     const isCorrect = data[index].correctAnswer === item;
     setSelectedOption(optionIndex);
@@ -16,7 +24,6 @@ const QuestionOptions = ({isDone, setIsDone, questions, index, selectedOption, s
     
    
     if (!isDone.includes(data[index].id)) {
-      console.log(typeof setScore) 
       if (isCorrect) {
         incrementScore(); 
 
@@ -44,11 +51,10 @@ const QuestionOptions = ({isDone, setIsDone, questions, index, selectedOption, s
                   const variant = isSelected ? questions[index].correctAnswer === item 
                    ? "correct" : "destructive" : "custom";
                    
-                  
                     return (
                    <Button
                       className="py-6 text-md h-12 rounded-full  md2:text-[.9rem] w-full shadow-md"
-                      key={item}
+                      key={item + optionIndex}
                       variant={variant}
                       onClick={(e) => {
                       handleAnswer(questions, item,optionIndex, index)

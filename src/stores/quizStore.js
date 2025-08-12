@@ -1,14 +1,16 @@
-import {create} from 'zustand'
+import { create } from 'zustand'
 
 const useQuizStore = create((set) =>({
-  currentScore: 0,
-  highestScore:0,
- 
-  incrementScore:() => set((state)=> ({
-    currentScore: state.currentScore + 1
-  })),
-  resetScore: ()=>set( { currentScore:0 } )
+  difficulty: "easy",  
+  changeDifficulty: (newDifficulty) => set({difficulty: newDifficulty}),
+
+  index: 0,
+  incrementIndex: () => set((state)=> ({index: state.index + 1})),
+  decrementIndex: () => set((state)=>({index:state.index -1})),
+  resetIndex : () => set({index: 0}),
+  
+  selectedOption: null, 
+  setSelectedOption: (option) => set({selectedOption: option}),
   
 }))
-
-export default useQuizStore
+export default useQuizStore;

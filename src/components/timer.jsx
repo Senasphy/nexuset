@@ -1,57 +1,37 @@
-// Timer.js
-import { useState, useEffect, useRef } from 'react';
+import {useState, useEffect} from 'react';
+import useTimerStore from '../stores/timerStore';
 
-function Timer({ duration, setCompleted, setTimeover, setCurrentTime }) {
-  const [time, setTime] = useState(Number(duration) || 10000); // Ensure valid number
-  const intervalRef = useRef(null);
 
-  useEffect(() => {
-    // Prevent multiple intervals
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
+function Timer(){
+  const { countdownTime, time, isRunning,incrementTimer} = useTimerStore((state)=> ({
+    countdownTime: state.countdownTime,
+    time: state.time,
+    isRunning: state.isRunning,
+    incrementTimer: state.incrementTimer,
+  })
+  );
+  useEffect(() =>{
+    let interval;
+    if(isRunning){
+      interval = setInterval(()=>{
+        incrementTimer();
+      }, 1000);
     }
+    return () => clearInterval(interval);
+  }, [isRunning, incrementTimer]);
 
-    intervalRef.current = setInterval(() => {
-      setTime(prevTime => {
-        const newTime = Number(prevTime) - 1000; // Ensure prevTime is a number
-        if (isNaN(newTime) || newTime <= 1000) {
-          clearInterval(intervalRef.current);
-          intervalRef.current = null;
-          setTimeover(true);
-          setCompleted(true);
-          return 0;
-        }
-        return newTime;
-      });
-    }, 1000);
+  return <div>{formatTime(time, countdownTime)}</div>
+}
 
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    };
-  }, [setTimeover, setCompleted]); // Include dependencies to prevent stale closures
-
-  useEffect(() => {
-    const formattedTime = getFormattedTime(time);
-    console.log('Timer time:', time, 'Formatted total:', formattedTime.total);
-    if (setCurrentTime) {
-      setCurrentTime(formattedTime.total);
-    }
-  }, [time, setCurrentTime]);
-
-  function getFormattedTime(milliSeconds = 0) {
-    const safeMilliSeconds = Number(milliSeconds) || 0; // Ensure valid number
-    if (safeMilliSeconds < 0) {
-      return { formatted: '0:00', total: 0 };
-    }
-    const totalSeconds = Math.floor(safeMilliSeconds / 1000);
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-    return { formatted: `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`, total: totalSeconds };
+function formatTime(seconds,differenceTerm){
+  console.log("seconds: ",seconds)
+  
+  console.log("differenceTerm: ",differenceTerm)
+  const totalSeconds = Math.max(0, parseInt(differenceTerm) - seconds);
+  const minutes = Math.floor(totalSeconds/60);
+  const secs = totalSeconds % 60;
+  return `${minutes.toString().padStart(2,'0')}:${secs.toString().padStart(2, '0')}`;
   }
 
-  return <div>{getFormattedTime(time).formatted}</div>;
-}
 
 export default Timer;

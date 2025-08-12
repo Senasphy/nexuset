@@ -5,7 +5,6 @@ const CategoryCard = ({category}) => {
     <div className= {`rounded-3xl shadow-md flex gap-2 flex-col bg-[${category.background}] 
                 px-4 py-6 hover:opacity-75 hover:cursor-pointer text-lg my-2 mx-4`  }
                 
-                onClick = {()=>{}}
                 >
                <div className="flex gap-2 items-center ">
                {/*  The logo of each */}

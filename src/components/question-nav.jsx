@@ -3,26 +3,35 @@ import { RotateCcw, ArrowBigLeft, ArrowBigRight} from 'lucide-react'
 import {Button} from "@/components/ui/button"
 import { submitScore} from '@/lib/helpers'
 import useQuizStore from '@/stores/quizStore'
-export const QuestionNav = ({questions,isDone,setIsDone,  index, setIndex, selectedOption, setSelectedOption, score} ) => {
+import useScoreStore from '@/stores/scoreStore'
+export const QuestionNav = ({questions,isDone,setIsDone, selectedOption, setSelectedOption, score} ) => {
+  const { index, incrementIndex, decrementIndex, resetIndex  } = useQuizStore((state) =>(
+    {
+      index: state.index,
+      incrementIndex: state.incrementIndex,
+      decrementIndex: state.decrementIndex,
+      resetIndex: state.resetIndex
+    })
+  )
 
-  const { currentScore } = useQuizStore();
-  const resetScore = useQuizStore((state)=>state.resetScore)
-  
+ const { currentScore, resetScore} = useQuizStore((state)=>({
+   currentScore: state.currentScore,
+   resetScore: state.resetScore,
+ }));
+  const endOfQuestions = index === questions.length ;
  function previousQuestion(){
-    setIndex(index - 1 )
+    decrementIndex();
     setSelectedOption(null)
   }
   function nextQuestion(){
-    setIndex(index+1)
+    incrementIndex();
     setSelectedOption(null)
   }
   function handleResetQuestion(){
     resetScore()
     setIsDone([]);
     setSelectedOption(null)
-    setIndex(0)
-    console.log("Score")
-    console.log("Reset is happening")
+    resetIndex()
   }
   return (
     <>
@@ -51,33 +60,29 @@ export const QuestionNav = ({questions,isDone,setIsDone,  index, setIndex, selec
         >
           <ArrowBigLeft />
         </div>
-
-        <div
-          className="px-4 py-4 bg-[#D8D8FF] text-lg font-bold md2:text-xl 
-          rounded-2xl shadow-md font-bold hover:scale-105 transition duration-300 
-          hover:opacity-75 hover:cursor-pointer"
-          onClick={()=>nextQuestion()}
-        >
-          <ArrowBigRight />
-        </div>
-     
        
-        </div>
-        <div className='flex w-full justify-center items-center '>
-             {index === questions.length - 1 ? (
-       <div className=''>
+            {endOfQuestions ? (
           <Button variant  = "custom"
           className="px-4 py-6 text-lg h-14 font-light md2:text-xl rounded-2xl"
-          onClick={submitScore}
+          onClick={submitScore(currentScore)}
           >
           Submit
           </Button>
-          </div>
           
-        ) : null}
+        ) : 
+        <button
+          className="px-4 py-4 bg-[#D8D8FF] text-lg font-bold md2:text-xl 
+          rounded-2xl shadow-md font-bold hover:scale-105 transition duration-300 
+          hover:opacity-75 hover:cursor-pointer"
+          onClick={()=>nextQuestion()}  disabled = {endOfQuestions} 
+        >
+          <ArrowBigRight />
+        </button>
+     }
+
         </div>
-       </>
+               </>
   )
 }
 
-export default QuestionNav
+export default QuestionNav;

@@ -1,7 +1,7 @@
 "use client"
 import categories from './categoryList'
 import CategoryCard from '@/components/category-card.jsx'
-import {logOut, useAuth} from '@/context/AuthContext'
+import {logout, useAuth} from '@/context/AuthContext'
 import {useRouter} from 'next/navigation'
 
   
@@ -24,7 +24,7 @@ const CategoryPage = () => {
    
    
     <div className="h-screen w-full ">
-            <div className = 'w-full h-[30%] flex flex-col items-between justify-between mb-4'>
+            <div className = 'w-full h-[30%] flex flex-col items-between justify-around'>
             <div className = 'flex items-center justify-end'>
                 <p className="m-8 transition-all ease-in-out hover:underline 
                 hover:text-red-600 hover:cursor-pointer active:scale-95" 

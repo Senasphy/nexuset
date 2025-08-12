@@ -4,34 +4,28 @@ import { useState, useEffect} from 'react';
 import { Menu, X, ToggleLeft, ChevronLeft} from 'lucide-react';
 import {Button} from '@/components/ui/button'
 import Timer from '@/components/timer'
-
-export default function Sidebar({setTimeover, setHasQuit,setCurrentTime}) {
+import useTimerStore from '../stores/timerStore.js'
+export default function Sidebar({setHasQuit}) {
+  const {time, startTimer, resetTimer, pauseTimer} = useTimerStore();
   const [isOpen, setIsOpen] = useState(false);
-  const [completed, setCompleted] = useState(false)
   const router = useRouter()
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
   };
-  useEffect(()=>{
-    if(completed){
-    }
     
-  }, [completed])
   return (
     <div className="relative flex justify-between items-center py-2 w-full ">
 
     <ChevronLeft size={32} onClick ={
       ()=> {
-        if(!completed){
-          setHasQuit(true)
-          return
-        }
-        router.back();
+        pauseTimer()     
+        setHasQuit(true)
+        console.log(time)
       }
     } />
 
       <div className =  ' p-1 border-2 border-black rounded-md '>
-    <Timer duration={10000}  setCurrentTime={setCurrentTime} setCompleted={setCompleted} completed={completed} setTimeover={setTimeover}/>
+    <Timer />
     </div>
     
       <Button variant='custom'
@@ -39,8 +33,10 @@ export default function Sidebar({setTimeover, setHasQuit,setCurrentTime}) {
         className="top-4 right-4 z-[1000] transition-colors"
         aria-label={isOpen ? 'Close sidebar' : 'Open sidebar'}
       >
-        {isOpen ? <X size={24} /> : <Menu size={24} />}
+       {isOpen ? <X size={24} /> : <Menu size={24} />}
       </Button>
+     <Button onClick={startTimer}>Start</Button>
+    <Button onClick={pauseTimer}>Pause</Button>
       {/* Sidebar */}
       <div
         className={`fixed top-0 right-0 h-full w-[70%] bg-black text-white shadow-lg transform ${

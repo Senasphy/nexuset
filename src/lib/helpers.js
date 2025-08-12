@@ -1,6 +1,5 @@
 import {addDoc} from 'firebase/firestore'
-import {db} from '@/lib/helpers'
-import useQuizStore from '@/stores/quizStore'
+import useScoreStore from '@/stores/scoreStore'
  
  
  export function handleOption(idx) {
@@ -19,7 +18,7 @@ import useQuizStore from '@/stores/quizStore'
 
 
  export function handleAnswer(data, item, optionIndex, index) {
-    const incrementScore = useQuizStore((state)=> state.incrementScore)
+    const incrementScore = useScoreStore((state)=> state.incrementScore)
     const isCorrect = data[index].correctAnswer === item;
     setSelectedOption(optionIndex);
     setCorrectOption(isCorrect);
@@ -34,15 +33,15 @@ import useQuizStore from '@/stores/quizStore'
 
 
 
-export function submitScore() {
-    updateScore();
+export function submitScore(score) {
+    updateScore(score);
     alert(`Your score of ${score} has been updated`);
     resetQuestion();
   }
 
 
 
-async function updateScore() {
+async function updateScore(score) {
     try {
       await addDoc(collection(db, "scores"), {
         username,
