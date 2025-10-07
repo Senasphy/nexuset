@@ -3,11 +3,11 @@ import {useState, useEffect} from 'react'
 import {useParams} from 'next/navigation'
 import useQuestions from '@/lib/api'
 import QuestionComponent from "../question-component.js"
-import CategoryScroll from '@/components/category-scroll.jsx'
 import {Loader} from 'lucide-react'
 import useQuizStore from '@/stores/quizStore'
 
 export default function QuestionsPage(){
+
     const difficulty = useQuizStore((state) => state.difficulty);  
     const {category} = useParams()
     const {data, isLoading, error } = useQuestions(category)
@@ -31,7 +31,7 @@ export default function QuestionsPage(){
 
         return (
 
-            <div className='h-full bg-custom  overflow-hidden border-2 rounded-lg m-2' >
+            <div className='h-screen bg-white  overflow-hidden border-2 rounded-lg' >
         {filteredData && <QuestionComponent questions = {filteredData} /> }
          
         

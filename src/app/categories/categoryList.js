@@ -1,13 +1,12 @@
 
-
 const categories = [{
     name : "General",
     description: "Spell words from every field!", 
     highScore: 45,
     rating: 4.7,
     icon: "replace icon",
-    background: "#F3C5C5"
-
+    background: "#F3C5C5",
+    tailwind: "general_card"
 }, 
 {
     name : "Math",
@@ -15,7 +14,8 @@ const categories = [{
     highScore: 48,
     rating: 4.8,
     icon: "replace with icon",
-    background: "#F9E1C0"
+    background: "#F9E1C0",
+    tailwind: "maths_card"
 
 },
 {
@@ -24,7 +24,8 @@ const categories = [{
     highScore: 48,
     rating: 4.8,
     icon: "replace with icon",
-    background: "#C0F1DC"
+    background: "#C0F1DC",
+    tailwind: "science_card"
 },
 {
     name : "English",
@@ -32,7 +33,8 @@ const categories = [{
     highScore: 48,
     rating: 4.8,
     icon: "replace with icon",
-    background: "#F8B575"
+    background: "#F8B575",
+    tailwind: "english_card"
 },
 {
     name : "Geography",
@@ -40,7 +42,8 @@ const categories = [{
     highScore: 48,
     rating: 4.8,
     icon: "replace with icon",
-    background: "#D5D3FF"
+    background: "#D5D3FF",
+    tailwind: "geography_card"
 },
 ]
 export default categories 

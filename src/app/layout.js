@@ -1,4 +1,5 @@
 import { AuthProvider } from "@/context/AuthContext";
+import { ThemeProvider } from 'next-themes'
 import QueryProvider from '../lib/queryClient'
 import "./globals.css";
 
@@ -13,7 +14,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
       <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin = "true" />
@@ -25,7 +26,12 @@ wght@0,14..32,100..900;1,14..32,100..900&family=Poppins:ital,wght@0,
       <body style={{ fontFamily: " 'Inter', sans-serif" }}>
 
         <AuthProvider>
-          <QueryProvider>{children}</QueryProvider></AuthProvider>
+          <QueryProvider>
+              <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+                {children}
+              </ThemeProvider>
+          </QueryProvider>
+        </AuthProvider>
       </body>
     </html>
   );

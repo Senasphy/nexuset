@@ -1,36 +1,42 @@
-import QuestionCard from '@/components/question-card'
+import {useState, useEffect} from 'react'
 import QuestionOptions from '@/components/question-options'
 import QuestionNav from '@/components/question-nav'
-import { useState } from 'react'
+import QuestionCard from '@/components/question-card'
 import { useSwipeable } from 'react-swipeable'
-import Sidebar from '@/components/main-header'
-import CategoryScroll from '@/components/category-scroll'
-import { X } from 'lucide-react'; // Import the close icon from lucide-react
+import MainHeader from '@/components/main-header'
+import { X } from 'lucide-react'; 
 import Link from 'next/link'
 import useQuizStore from '@/stores/quizStore'
 import useTimerStore from '@/stores/timerStore'
 import {Button} from '@/components/ui/button'
-const QuestionComponent = ({ questions, difficulty, setDifficulty }) => {
+import { useShallow } from 'zustand/react/shallow'
+const QuestionComponent = ({ questions }) => {
 
-  const {time, countdownTime} = useTimerStore((state)=>({
+  const {time,  startTimer, setCountdownTime, resetTimer, restartTimer} = useTimerStore(useShallow((state)=>({
     time: state.time,
-    countdownTime: state.countdownTime
-  }) );
-  const {index, incrementIndex, decrementIndex } = useQuizStore((state)=>({
+    countdownTime: state.countdownTime,
+    startTimer: state.startTimer,
+    setCountdownTime: state.setCountdownTime,
+    resetTimer: state.resetTimer,
+    restartTimer: state.restartTimer
+  }) ));
+  const {index, incrementIndex, decrementIndex, isPaused, toggleIsPaused, isFinished ,setIsFinished, navigation} = useQuizStore(useShallow((state)=>({
     index: state.index,
     incrementIndex: state.incrementIndex,
     decrementIndex: state.decrementIndex,
-  }));
-  // const [index, setIndex] = useState(0);
+    isPaused: state.isPaused,
+    toggleIsPaused: state.toggleIsPaused,
+    isFinished: state.isFinished,
+    setIsFinished: state.setIsFinished,
+    navigation: state.navigation
+  })));
   const [selectedOption, setSelectedOption] = useState(null)
   const [score, setScore] = useState(0)
-  const [hasQuit, setHasQuit] = useState(false)
   const [isDone, setIsDone] = useState([]); 
   const handlers = useSwipeable({
     onSwipedLeft: () => {
       // Only allow swiping if the game is not over
         
-        // setIndex(index + 1)
         incrementIndex();  
         setSelectedOption(null)
     },
@@ -44,72 +50,99 @@ const QuestionComponent = ({ questions, difficulty, setDifficulty }) => {
     delta: 10,
   })
 
-  // Function to close the overlay and optionally reset game state
-  const handleCloseOverlay = () => {
-    // You could also add logic here to reset the game, e.g.:
-    // setIndex(0);
-    // setScore(0);
-    // setSelectedOption(null);
+
+  useEffect( () => {
+  setCountdownTime(50)   
+  startTimer()
+  }, [] )
+
+
+  function handleRestart(){
+   toggleIsPaused();
+   restartTimer(); 
+  }
+  
+  function handleResume(){
+    toggleIsPaused();
+    startTimer();
   }
 
+  function handleQuit(){
+    restartTimer();   
+    toggleIsPaused();
+    setIsFinished(false) }
   return (
-    <div className='flex gap-4 px-10 flex-col w-full h-full items-center justify-center relative' {...handlers}>
-      {/* Overlay for Game Over message 
-      {timeover && (
-        <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-[1000]'>
-          <div className='w-full max-w-sm m-4 bg-black text-white rounded-lg shadow-2xl relative'>
+
+    <div className='flex  dark:bg-black   gap-8 px-10 flex-col w-full h-screen items-center justify-center relative' {...handlers}>
+
+    {isPaused && (
+          <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-[1000]'>
+          <div className='w-full max-w-sm dark:bg-black dark:text-white m-16 bg-white text-black rounded-lg shadow-2xl relative'>
             
             <button
-              onClick={handleCloseOverlay}
-              className='absolute top-2 right-2 text-white p-1 rounded-full hover:bg-red-700 transition-colors'
-              aria-label="Close"
+              className='absolute top-2 right-2 text-red-400 p-1 rounded-full hover:bg-red-700 transition-colors'
+              aria-label="Close" onClick={handleResume}
             >
               <X size={24} />
             </button>
-            <div className='p-8 text-center'>
-                <h1 className='text-3xl font-bold mb-4'>Game Over!</h1>
-                <p className='text-lg'>Time has run out.</p>
-               <div className='flex gap-2 w-full justify-center'> 
-                  <Link href='../stats'><Button variant='secondary'>Stats</Button></Link>
-                  <Link href='../categories'><Button variant='secondary'>Close</Button></Link>
-                </div> 
-            </div>
-          </div>
+<div className='p-8 text-center'>
+    <h1 className='text-3xl  mb-4'>Game Paused!</h1>
+    <div className='flex flex-col gap-2 w-full'>
+        <div className='flex gap-4 w-full'>
+            <Link href='../categories/' className='flex-1'>
+                <Button variant='secondary' className='border-2 hover:shadow-lg shadow-sm w-full hover:bg-gray-200' onClick= {handleQuit}>Quit</Button>
+            </Link>
+            <Button variant='secondary' className='shadow-lg   opacity-80 dark:opacity-100 dark:text-black dark:border-2 bg-[#D8D8FF] hover:opacity-100 hover:bg-blue-300 hover:shadow-sm hover:shadow-blue-500 flex-1' onClick={handleResume}>Resume</Button>
         </div>
-      )} */}
+        <Button variant='secondary' className='border-2  w-full hover:bg-gray-200' onClick={handleRestart}>Restart</Button>
+    </div>
+</div>
+      </div>
+        </div>
+      )} 
 
-       { (hasQuit && (countdownTime > 0))    &&       (
-        <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-[1000]'>
-          <div className='w-full max-w-sm m-4 bg-black text-white rounded-lg shadow-2xl relative'>
+    {isFinished && (
+          <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-[1000]'>
+          <div className='w-full max-w-sm m-16 dark:bg-black dark:text-white  bg-white text-black rounded-lg shadow-2xl relative'>
             
             <button
-              onClick={handleCloseOverlay}
-              className='absolute top-2 right-2 text-white p-1 rounded-full hover:bg-red-700 transition-colors'
-              aria-label="Close"
-            >
+              className='absolute top-2 right-2 text-red-400 p-1 rounded-full  transition-colors'
+              aria-label="Close" onClick={()=>{
+
+                setIsFinished(false)
+                resetTimer();
+                startTimer();
+                
+              }}>
               <X size={24} />
             </button>
+<div className='p-8 text-center'>
+    <h1 className='text-xl  mb-4'>Congrats, you went through every question!</h1>
+    <div className='flex flex-col gap-2 w-full'>
+           <Button variant='secondary' className='shadow-lg   dark:text-black bg-[#D8D8FF] hover:opacity-100 hover:bg-blue-300 hover:shadow-sm hover:shadow-blue-500 flex-1' onClick={()=>{
+      
+                setIsFinished(false)
+                restartTimer();               
+              }}>Restart</Button>
+       <Link href='../categories/' className='flex-1'>
+                <Button variant='secondary' className='  hover:shadow-lg shadow-md w-full hover:bg-gray-200' onClick={handleQuit}>Quit</Button>
+            </Link>
+   </div>
+    <div>{time}</div>
+</div>         </div>
+        </div>)}
 
-            <div className='p-8 text-center'>
-                <h1 className='text-3xl font-bold mb-4'>Game Over!</h1>
-                <p className='text-lg'>Time has run out.</p>
-               <div className='flex gap-2 w-full justify-center'> 
-                  <Link href='../stats'><Button variant='destructive'>Quit</Button></Link>
-                  <Link href='../categories'><Button variant='secondary'>Resume</Button></Link>
-                </div> 
-         <div>{time} </div>
-            </div>
-          </div>
-        </div>
-      )}      {/* Main content of the game */}
-      <Sidebar setHasQuit={setHasQuit}/> 
-      <CategoryScroll   setSelectedOption={setSelectedOption} />
+
+
+
+    {/* Main content of the game */}
+
+      <MainHeader  /> 
       <QuestionCard questions={questions} index={index}></QuestionCard>
       <QuestionOptions questions={questions}   selectedOption={selectedOption}
         setSelectedOption={setSelectedOption} score={score} setScore={setScore} isDone={isDone} setIsDone={setIsDone}></QuestionOptions>
-      <QuestionNav questions={questions}  
-        selectedOption={selectedOption} setSelectedOption={setSelectedOption} score={score} isDone={isDone}
-        setIsDone={setIsDone}></QuestionNav>
+    
+    {(navigation === "both" || navigation === "buttons" ) && (<QuestionNav questions={questions}  selectedOption={selectedOption} setSelectedOption={setSelectedOption} score={score} isDone={isDone} setIsDone={setIsDone} />)}
     </div>
   )
 }

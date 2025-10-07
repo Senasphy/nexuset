@@ -7,6 +7,7 @@ const useScoreStore = create((set) =>({
   incrementScore: () => set((state)=> ({
     currentScore: state.currentScore + 1
   })),
+
   resetScore: () =>set( { currentScore:0 } )
   
 }))

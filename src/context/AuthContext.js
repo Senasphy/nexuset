@@ -1,6 +1,6 @@
 'use client';
 
-import {auth, db}  from '../lib/firebase';
+import { auth, db }  from '@/lib/firebase';
 import { useState, useEffect, createContext, useContext} from 'react';
 import {
   createUserWithEmailAndPassword,
@@ -29,13 +29,14 @@ export function AuthProvider({ children }) {
       setLoading(false);
       return;
     }
+
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
 
       if(currentUser){
           try{
-            const userDoc = await getDoc(doc(db,'users',currentUser.uid));
-            if (userDoc.exists()){
-              setUsername(userDoc.data().username);
+            const userdoc = await getDoc(doc(db,'users',currentUser.uid));
+            if (userdoc.exists()){
+              setUsername(userdoc.data().username);
             } else{
               setUsername(null)
             }
@@ -113,7 +114,7 @@ export function AuthProvider({ children }) {
     return userCredentials
      
   }
-  const value = { user, loading, signUp, login,logout, username };
+  const value = { user, loading, signUp, login, logout, username };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

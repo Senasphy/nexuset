@@ -1,12 +1,13 @@
 import {Button} from '@/components/ui/button.jsx' 
 import useQuizStore from '@/stores/quizStore'
 import {shallow} from 'zustand/shallow'
+import { useShallow } from 'zustand/react/shallow'
 const CategoryScroll = ({setSelectedOption}) => {
   const difficulties = ["easy", "medium", "hard"]
-  const {difficulty, changeDifficulty} = useQuizStore((state)=>({
+  const {difficulty, changeDifficulty} = useQuizStore(useShallow((state)=>({
     difficulty: state.difficulty,
     changeDifficulty: state.changeDifficulty
-  }), shallow );
+  })), shallow );
   return (
     <div className="  w-full ">
     <div className="flex  w-[100%]   py-2 font-bold flex  justify-between">

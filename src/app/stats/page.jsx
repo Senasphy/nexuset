@@ -18,19 +18,17 @@ export function Stats() {
   ];
 
   return (
-    <div className= 'flex flex-col gap-4 px-4'>
+    <div className= 'flex flex-col gap-4 px-4 dark:bg-black dark:text-white'>
       {timespans.map((item, index) => {
         const title = item[0]; // e.g., "Today"
         const unit = item[1];   // e.g., "minutes"
 
-        return ( // <- ADDED 'return' keyword here
-          // ADDED 'key' prop here with a unique value (index is okay for this static array)
+        return ( 
           <div key={index}>
             <h1 className='p-2 text-2xl'>{title}</h1> {/* <- Now dynamic */}
-            <Card className="max-w-full mx-2 p-4">
+            <Card className="dark:border-gray-800 max-w-full mx-2 p-4">
               <div className='flex flex-col [&>*]:my-1'>
                 <div className='flex w-full justify-between'>
-                  <span>{unit}</span> {/* <- Now dynamic */}
                   <span><Select>
   <SelectTrigger className="">
     <SelectValue placeholder="Unit" />
@@ -46,7 +44,7 @@ export function Stats() {
                 <div className='h-[40%]  text-6xl'>
                   25:00
                 </div>
-                <div className='[&>*]:bg-custom [&>*]:rounded-full [&>*]:hover:cursor-pointer flex gap-2 [&>*]:text-sm [&>*]:px-1 '>
+                <div className='[&>*]:bg-custom [&>*]:rounded-full [&>*]:hover:cursor-pointer flex gap-2 flex-wrap [&>*]:text-sm [&>*]:px-1 '>
                   <span> geography </span>
                   <span> science </span>
                   <span> mathematics </span>
@@ -58,7 +56,7 @@ export function Stats() {
           </div>
         );
       })}
-    <Link href='../categories'><Button variant='rounded' >Practice</Button></Link>
+    <Link href='../categories'><Button variant='rounded' className='shadow-md bg-gray-200' >Practice</Button></Link>
     </div>
   );
 }

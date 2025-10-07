@@ -3,9 +3,8 @@ import {useState} from 'react'
 import {useAuth} from '@/context/AuthContext'
 import {useRouter} from 'next/navigation'
 import LoginForm from '@/components/login-form'
-import { Button } from '@/components/ui/button';
 import {Loader} from 'lucide-react'
-
+import {Button}from '@/components/ui/button'
 
 export default function Login(){
     const {login,loading} = useAuth()
@@ -19,9 +18,9 @@ export default function Login(){
         setActionLoading(true)
         try{
             await login(email, password)
-            router.push('../categories')
+            router.push('../categories/')
         } catch(err){
-            const errMap = {'auth/invalid-email': 'Please enter a valid email address',
+            const errMap = {'auth/invalid-emajil': 'Please enter a valid email address',
         'auth/user-not-found': 'You have not signed up with this email',
         'auth/wrong-password': 'Email or password is incorrect',
         'auth/invalid-credential': 'Email or password is incorrect',

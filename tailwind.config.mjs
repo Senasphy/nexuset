@@ -1,11 +1,18 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-    darkMode: ["class"],
+    darkMode: 'class',
     content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
+  safelist: [
+        'bg-card_general',
+        'bg-card_science',
+        'bg-card_maths',
+        'bg-card_english',
+        'bg-card_geography',
+    ],
   theme: {
   	extend: {
   		colors: {
@@ -15,6 +22,11 @@ export default {
   				DEFAULT: 'hsl(var(--card))',
   				foreground: 'hsl(var(--card-foreground))'
   			},
+        card_general: "#F3C5C5",
+        card_science: "#C0F1DC",
+        card_maths : "#F9E1C0",
+        card_english : "#F8B575", 
+        card_geography:  "#D5D3FF",
   			popover: {
   				DEFAULT: 'hsl(var(--popover))',
   				foreground: 'hsl(var(--popover-foreground))'

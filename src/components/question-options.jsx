@@ -3,19 +3,16 @@ import { handleOption} from '@/lib/helpers'
 import {Button} from '@/components/ui/button'
 import useQuizStore from '@/stores/quizStore'
 import useScoreStore from '@/stores/scoreStore'
-
+import { useShallow } from 'zustand/react/shallow'
 
 const QuestionOptions = ({isDone, setIsDone, questions,  selectedOption, setSelectedOption}) => {
   const index = useQuizStore((state) => state.index)
   const [correctOption, setCorrectOption] = useState(null)
   
-  const { incrementScore , currentScore} = useScoreStore((state)=> ({
+  const { incrementScore , currentScore} = useScoreStore(useShallow((state)=> ({
     incrementScore: state.incrementScore,
     currentScore: state.currentScore,
-  }))
-
-
-
+  })));
 
   function handleAnswer(data, item, optionIndex, index) {
     const isCorrect = data[index].correctAnswer === item;
@@ -36,16 +33,9 @@ const QuestionOptions = ({isDone, setIsDone, questions,  selectedOption, setSele
 
  if(!questions || questions.length === 0) return <div>No question available</div>
   return (
-
          <div
                   key={questions[index].id}
-                  className="flex flex-col   items-center justify-center
-                   gap-4 md2:text-xl mb-4 w-full"
-                >
-                
-               
-
-
+                  className= "flex flex-col   dark:text-black items-center text-xl justify-center gap-4  mb-4 w-full">
                   {questions[index].options.map((item, optionIndex) => {
                   const isSelected = selectedOption === optionIndex;
                   const variant = isSelected ? questions[index].correctAnswer === item 
@@ -53,7 +43,7 @@ const QuestionOptions = ({isDone, setIsDone, questions,  selectedOption, setSele
                    
                     return (
                    <Button
-                      className="py-6 text-md h-12 rounded-full  md2:text-[.9rem] w-full shadow-md"
+                      className="py-6 text-lg h-12 rounded-full   w-full shadow-md"
                       key={item + optionIndex}
                       variant={variant}
                       onClick={(e) => {
