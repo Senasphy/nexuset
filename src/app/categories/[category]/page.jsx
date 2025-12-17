@@ -31,7 +31,7 @@ export default function QuestionsPage(){
 
         return (
 
-            <div className='h-screen bg-white  overflow-hidden border-2 rounded-lg' >
+            <div className='h-screen bg-lightDot-bg   dark:bg-darkDot-bg overflow-hidden border-2 rounded-lg' >
         {filteredData && <QuestionComponent questions = {filteredData} /> }
          
         

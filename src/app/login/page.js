@@ -20,7 +20,7 @@ export default function Login(){
             await login(email, password)
             router.push('../categories/')
         } catch(err){
-            const errMap = {'auth/invalid-emajil': 'Please enter a valid email address',
+            const errMap = {'auth/invalid-email': 'Please enter a valid email address',
         'auth/user-not-found': 'You have not signed up with this email',
         'auth/wrong-password': 'Email or password is incorrect',
         'auth/invalid-credential': 'Email or password is incorrect',
@@ -33,26 +33,24 @@ export default function Login(){
     }
     if(actionLoading || loading) return(
 
- <div className="bg-new-bg bg-cover bg-center flex gap-2 w-full h-screen text-lg items-center justify-center ">
+     <div className="bg-greenGirl-bg bg-cover bg-center flex gap-2 w-full h-screen text-lg items-center justify-center ">
 
     <Loader className='animate-spin text-white w-8 h-8 ' /> <p className='text-white text-4xl'> Loading...</p>
-
     </div>
-
 )
     else{return(
-        <div className = 'bg-new-bg bg-cover bg-center  h-screen w-full flex items-center justify-center flex-col gap-4 '>
+        <div className = 'bg-greenGirl-bg bg-cover bg-center  h-screen w-full flex items-center justify-center flex-col gap-4 '>
 <div className="absolute inset-0 bg-black/50"></div>
-      <div className="relative z-10 text-white">
-        <h1 className='text-2xl text-center font-bold'>LOGIN</h1>
-        <div className='text-lg w-full'>
+      <div className="relative z-10  w-full text-white">
+        <h1 className='text-6xl text-center font-bold'>LOGIN</h1>
+        <div className='text-2xl  p-8 flex flex-col items-center  '>
          <LoginForm email = {email}
                     setEmail = {setEmail}
                     password = {password}
                     setPassword = {setPassword} onSubmit = {handleLogin} />
         {error && <p className = 'text-red-500'>{error}</p>}
         </div>
-         <div className='flex text-md gap-2 justify-center items-center'>
+         <div className='flex text-2xl gap-2 justify-center items-center'>
             <p>Create new account?</p>
             <Button variant = 'link' className = 'text-blue-500 text-md' onClick = {() => router.push('/sign-up')}>Sign Up</Button>
          </div>

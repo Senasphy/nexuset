@@ -16,7 +16,7 @@ export default function LoginForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 w-full px-8 ">
+    <form onSubmit={handleSubmit} className="space-y-6 w-full px-8 text-black text-3xl ">
       <div className='w-full'>
         <label htmlFor="email" className="block text-sm font-medium">
         </label>
@@ -27,7 +27,7 @@ export default function LoginForm({
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Enter your email"
           required
-          className="mt-1 text-lg py-2 px-4 rounded-md border h-12
+          className="mt-1 text-3xl py-8 px-4 rounded-md bg-white text-black border 
            border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         />
       </div>
@@ -42,11 +42,11 @@ export default function LoginForm({
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Enter your password"
           required
-          className="mt-1 font-lg py-2 px-4 rounded-md border h-12
+          className="mt-1  text-3xl bg-white text-black py-8 px-4 rounded-md border h-12
            border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         />
       </div>
-      <Button variant="custom" className="w-full text-lg h-12" type="submit">
+      <Button variant="custom" className="w-full text-3xl py-8" type="submit">
         Login
       </Button>
     </form>

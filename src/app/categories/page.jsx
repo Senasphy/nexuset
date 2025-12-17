@@ -35,7 +35,7 @@ const CategoryPage = () => {
   return (
    
    
-    <div className='h-full dark:bg-black relative w-full flex flex-col'>
+    <div className='h-full dark:bg-dark-bg bg-cover bg-center relative w-full flex flex-col'>
     {isSidebarOpen && <div className='fixed inset-0 bg-black/50 '> </div> }
             <div className = 'flex items-center justify-between p-8 '>
                 <p className= "transition-all ease-in-out hover:underline hover:text-red-600 hover:cursor-pointer active:scale-95" 

@@ -78,6 +78,10 @@ export default {
 
     backgroundImage:{
       'new-bg':"url('/newBg.jpg')",
+      'dark-bg':"url('/darkBg.jpg')",
+      'darkDot-bg':"url('/darkDot.jpg')",
+      'lightDot-bg':"url('/lightDot.jpg')",
+      'greenGirl-bg':"url('/greenGirl.jpg')",
     }
 
   	}

@@ -14,13 +14,12 @@ export default function MainHeader() {
   }
   return (
     <div className=" flex justify-between  items-center  w-full ">
-
-        <div className ='p-1 border-2 border-black rounded-md '>
-    <Timer />
-    </div>
-    <button  onClick = {handlePause}>
-    <Pause className='hover:cursor-pointer'/>
-    </button>
+      <div>
+        <Timer />
+      </div>
+      <button  onClick = {handlePause}>
+        <Pause className='text-black dark:text-white hover:cursor-pointer'/>
+      </button>
    </div>
   );
 }

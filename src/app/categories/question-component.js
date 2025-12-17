@@ -73,7 +73,7 @@ const QuestionComponent = ({ questions }) => {
     setIsFinished(false) }
   return (
 
-    <div className='flex  dark:bg-black   gap-8 px-10 flex-col w-full h-screen items-center justify-center relative' {...handlers}>
+    <div className='flex  dark:bg-darkDot-bg   bg-lightDot-bg bg-cover  bg-no-repeat gap-8 px-10 flex-col w-full h-screen items-center justify-center relative' {...handlers}>
 
     {isPaused && (
           <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-[1000]'>

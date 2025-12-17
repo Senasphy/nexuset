@@ -36,7 +36,7 @@ function formatTime(seconds,differenceTerm){
   return `${minutes.toString().padStart(2,'0')}:${secs.toString().padStart(2, '0')}`;
   }
 
-  return <div>{formatTime(time, countdownTime)}
+  return <div className='p-2 border-2 border-black rounded-md  dark:text-black text-2xl dark:bg-white '>{formatTime(time, countdownTime)}
   </div>
 
 }
