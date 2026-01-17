@@ -24,7 +24,7 @@ const useQuizStore = create((set) =>({
   navigation: "both",
   setNavigation: (nav) => set({navigation:nav}),
 
-  isSidebarOpen: true,
+  isSidebarOpen: false,
   toggleSidebar: () => set((state) =>({isSidebarOpen: !state.isSidebarOpen})),
   setIsSidebarOpen: (sidebarStatus) => set({
     isSidebarOpen: sidebarStatus
