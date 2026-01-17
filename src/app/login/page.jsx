@@ -5,8 +5,8 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import Link from 'next/link'
 
-export default function SignupPage() {
-  const { signUp } = useAuth()
+export default function LoginPage() {
+  const { login } = useAuth()
   const router = useRouter()
   
   const [error, setError] = useState(null)
@@ -18,35 +18,21 @@ export default function SignupPage() {
     setIsLoading(true)
 
     const formData = new FormData(e.currentTarget)
-    
-    const username = formData.get('username')?.toString().trim()
     const email = formData.get('email')?.toString().trim()
-    console.log(email)
     const password = formData.get('password')?.toString()
 
-    // Basic client-side validation
-    if (!username || username.length < 3) {
-      setError('Username must be at least 3 characters')
-      setIsLoading(false)
-      return
-    }
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setError('Please enter a valid email')
-      setIsLoading(false)
-      return
-    }
-    if (!password || password.length < 8) {
-      setError('Password must be at least 8 characters')
+    if (!email || !password) {
+      setError('Please enter both email and password')
       setIsLoading(false)
       return
     }
 
     try {
-      await signUp(email, password, username)
-      console.log("Attempting to login with: ", email)
-      router.push('/dashboard')
+      await login(email, password)
+      router.push('/categories')   // ← changed to dashboard (common after login)
+      // or '/categories' if that's your main page
     } catch (err) {
-      setError(err.message || 'Failed to create account')
+      setError(err.message || 'Invalid email or password')
     } finally {
       setIsLoading(false)
     }
@@ -68,7 +54,7 @@ export default function SignupPage() {
         <div className="w-full max-w-md px-8 py-12">
           <div className="text-center mb-10">
             <h1 className="text-3xl font-semibold text-gray-900 tracking-tight">
-              Create an account
+              Log In
             </h1>
           </div>
 
@@ -78,20 +64,6 @@ export default function SignupPage() {
                 {error}
               </p>
             )}
-
-            <div>
-              <label htmlFor="username" className="block text-sm font-bold text-gray-700 mb-1">
-                Username
-              </label>
-              <input
-                type="text"
-                id="username"
-                name="username"
-                placeholder="Choose a username"
-                required
-                className="block w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-              />
-            </div>
 
             <div>
               <label htmlFor="email" className="block text-sm font-bold text-gray-700 mb-1">
@@ -115,12 +87,12 @@ export default function SignupPage() {
                 type="password"
                 id="password"
                 name="password"
-                placeholder="Create a password"
+                placeholder="Enter your password"
                 required
                 className="block w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               />
               <p className="mt-1.5 text-xs text-gray-500 italic">
-                Must be at least 8 characters
+                Minimum 8 characters
               </p>
             </div>
 
@@ -130,7 +102,7 @@ export default function SignupPage() {
               className={`w-full py-3 mt-2 bg-blue-600 text-white font-medium rounded-lg transition-colors
                 ${isLoading ? 'opacity-60 cursor-not-allowed' : 'hover:bg-blue-700'}`}
             >
-              {isLoading ? 'Creating account...' : 'Sign Up'}
+              {isLoading ? 'Logging in...' : 'Log In'}
             </button>
           </form>
 
@@ -154,9 +126,9 @@ export default function SignupPage() {
           </div>
 
           <p className="mt-10 text-center text-sm text-gray-600">
-            Already have an account?{' '}
-            <Link href="/login" className="text-blue-600 font-semibold hover:underline">
-              Log in
+            Don't have an account?{' '}
+            <Link href="/dashboard" className="text-blue-600 font-semibold hover:underline">
+              Sign Up
             </Link>
           </p>
         </div>

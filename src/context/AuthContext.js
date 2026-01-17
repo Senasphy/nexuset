@@ -91,6 +91,7 @@ export function AuthProvider({ children }) {
       throw new Error('Auth service is not initialized');
     }
     try{
+    document.cookie = '__session=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;'
       await signOut(auth);
       setUser(null)
       setUsername(null)
@@ -100,9 +101,11 @@ export function AuthProvider({ children }) {
     }
     }
   const login = async (email, password) => {
-   
+   // Inside login function, after signInWithEmailAndPassword
     const userCredentials = await signInWithEmailAndPassword(auth, email, password);
     const user = userCredentials.user;  
+    const idToken = await user.getIdToken()
+    document.cookie = `__session=${idToken}; path=/; SameSite=Strict; Secure; Max-Age=3600`
     const userDoc = await getDoc(doc(db, 'users', user.uid));
     if (userDoc.exists()){
       setUsername(userDoc.data().username);

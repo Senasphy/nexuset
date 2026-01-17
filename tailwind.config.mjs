@@ -82,6 +82,7 @@ export default {
       'darkDot-bg':"url('/darkDot.jpg')",
       'lightDot-bg':"url('/lightDot.jpg')",
       'greenGirl-bg':"url('/greenGirl.jpg')",
+      'calm-bg': "url('/backgroundCalm.jpg')",
     }
 
   	}
