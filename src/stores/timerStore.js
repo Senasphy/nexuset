@@ -7,7 +7,8 @@ const useTimerStore = create((set) =>({
     pauseTimer: ()=> set({isRunning: false}),
     resetTimer: () => set({time:0, isRunning:false}),
     restartTimer:() => set({time:0, isRunning:true}),
-    countdownTime: 0,
+    countdownTime: 15,
+    resetCountdownTime: ()=> set({countdownTime:15}),
     setCountdownTime: (seconds) => set({countdownTime: seconds}),
     incrementTimer: () => set((state) => ({time: state.time + 1}))
 }))

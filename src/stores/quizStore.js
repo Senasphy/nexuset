@@ -17,6 +17,7 @@ const useQuizStore = create((set) =>({
 
   isPaused: false,
   toggleIsPaused: () => set((state)=>({isPaused: !state.isPaused})),
+  setIsPaused: (paused) => set({ isPaused: paused }),
 
   isFinished: false,
   setIsFinished: (option) => set({isFinished: option}),

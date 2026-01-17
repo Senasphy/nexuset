@@ -83,7 +83,7 @@ const CategoryPage = () => {
         {/* Categories */}
         <div className="grid gap-6 sm:gap-8 sm:grid-cols-2 lg:grid-cols-3  ">
           {categories.map((item) => (
-            <CategoryCard category={item} />
+            <CategoryCard category={item} key={item.description} />
           ))}
         </div>
       </main>

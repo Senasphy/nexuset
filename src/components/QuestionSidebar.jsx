@@ -23,7 +23,7 @@ export default function QuestionSidebar() {
     }))
   )
 
-  const {username} = useAuth();
+  const {username, user} = useAuth();
   const {currentScore} = useScoreStore(useShallow((s) => ({
     currentScore: s.currentScore
   })))
@@ -36,7 +36,7 @@ export default function QuestionSidebar() {
   }
 
   const accuracy = calculateAccuracy();
-  const avatarUrl = "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&auto=format&fit=crop&q=80"
+  const avatarUrl = user?.photoURL || ""
   const totalQuestions = 30
 
   return (

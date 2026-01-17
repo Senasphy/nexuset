@@ -1,6 +1,6 @@
 "use client"
 import { useShallow } from 'zustand/react/shallow'
-import { X, Moon, Sun, Monitor, Clock, Sliders, Globe } from 'lucide-react'
+import { X, Moon, Sun,  Clock, Sliders, Globe } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Select,
@@ -49,8 +49,6 @@ function Sidebar() {
     startTimer()
   }
 
-  // FIXED: Fallback to ensure the Select shows text even if the store is empty initially
-  const selectTimeValue = countdownTime ? String(countdownTime) : "60";
 
   return (
     <div
@@ -144,16 +142,16 @@ function Sidebar() {
               Time per question
             </label>
             <Select
-              value={selectTimeValue}
+              value={countdownTime?.toString()}
               onValueChange={handleTimeChange}
             >
               <SelectTrigger className="h-12 border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 text-slate-900 dark:text-white font-medium rounded-xl">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="z-[1100] bg-white dark:bg-[#161b2c] border-slate-200 dark:border-white/10 text-slate-900 dark:text-white rounded-xl">
-                <SelectItem value="50">10 seconds</SelectItem>
-                <SelectItem value="60">15 seconds</SelectItem>
-                <SelectItem value="70">20 seconds</SelectItem>
+                <SelectItem value="10">10 seconds</SelectItem>
+                <SelectItem value="15">15 seconds</SelectItem>
+                <SelectItem value="20">20 seconds</SelectItem>
               </SelectContent>
             </Select>
           </div>

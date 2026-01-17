@@ -9,6 +9,7 @@ import useScoreStore from '@/stores/scoreStore'
 import { Button } from '@/components/ui/button'
 import QuestionSidebar from '@/components/QuestionSidebar'
 import { useAuth } from '@/context/AuthContext'
+import useTimerStore from '@/stores/timerStore'
 
 const QuestionComponent = ({ questions }) => {
   const {
@@ -17,6 +18,7 @@ const QuestionComponent = ({ questions }) => {
     decrementIndex,
     isPaused,
     toggleIsPaused,
+    setIsPaused, // New setter
     isFinished,
     setIsFinished,
     resetIndex,
@@ -27,16 +29,20 @@ const QuestionComponent = ({ questions }) => {
       decrementIndex: s.decrementIndex,
       isPaused: s.isPaused,
       toggleIsPaused: s.toggleIsPaused,
+      setIsPaused: s.setIsPaused,
       isFinished: s.isFinished,
       setIsFinished: s.setIsFinished,
       resetIndex: s.resetIndex,
     }))
   )
-  const { incrementScore } = useScoreStore(
+  const { incrementScore, resetScore } = useScoreStore(
     useShallow((s) => ({
-      incrementScore: s.incrementScore
+      incrementScore: s.incrementScore,
+      resetScore: s.resetScore
     }))
   )
+
+  const { countdownTime } = useTimerStore();
   const { username } = useAuth();
 
   if (!questions?.length) {
@@ -58,19 +64,29 @@ const QuestionComponent = ({ questions }) => {
   const [userAnswer, setUserAnswer] = useState(new Array(word.length).fill(""))
   const [isError, setIsError] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
-  const [secondsLeft, setSecondsLeft] = useState(15)
+  const [secondsLeft, setSecondsLeft] = useState(countdownTime)
 
+  // Initialization
   useEffect(() => {
-    resetIndex()
-    setIsFinished(false)
-  }, [])
+    const init = setTimeout(() => {
+      resetIndex()
+      setIsFinished(false)
+      resetScore()
+      setIsPaused(false) // Force unpause on load
+    }, 0)
+    
+    return () => clearTimeout(init)
+  }, [])  
 
+  // Question / Timer Logic
   useEffect(() => {
     isTransitioning.current = false
     setUserAnswer(new Array(word.length).fill(""))
     setIsError(false)
     setIsSuccess(false)
-    setSecondsLeft(15)
+    setSecondsLeft(countdownTime) // Using the constant value
+
+    if (timerRef.current) clearInterval(timerRef.current)
 
     timerRef.current = setInterval(() => {
       setSecondsLeft((prev) => {
@@ -96,24 +112,23 @@ const QuestionComponent = ({ questions }) => {
       clearInterval(timerRef.current)
       clearTimeout(focusTimer)
     }
-  }, [safeIndex, word])
-
-  useEffect(() => {
-    if (isPaused) clearInterval(timerRef.current)
-  }, [isPaused])
+  }, [safeIndex, word, countdownTime, isPaused]) // Added isPaused to sync timer accurately
 
   const handlePause = () => toggleIsPaused()
 
   const handleResetInput = () => {
+    if (timerRef.current) clearInterval(timerRef.current)
     setUserAnswer(new Array(word.length).fill(""))
     setIsError(false)
     setIsSuccess(false)
+    setSecondsLeft(countdownTime) // Reset local timer to constant
     resetIndex(0)
+    setIsPaused(false) // Force unpause on reset
     inputRefs.current[0]?.focus()
   }
 
   const handleInputChange = (e, i) => {
-    if (secondsLeft === 0 || isSuccess || isTransitioning.current) return
+    if (secondsLeft === 0 || isSuccess || isTransitioning.current || isPaused) return
     const char = e.target.value.toLowerCase().slice(-1)
     const newAnswer = [...userAnswer]
     newAnswer[i] = char
@@ -197,7 +212,7 @@ const QuestionComponent = ({ questions }) => {
                     type="text"
                     maxLength={1}
                     value={char}
-                    disabled={secondsLeft === 0 || isSuccess || isTransitioning.current}
+                    disabled={secondsLeft === 0 || isSuccess || isTransitioning.current || isPaused}
                     ref={(el) => (inputRefs.current[i] = el)}
                     onChange={(e) => handleInputChange(e, i)}
                     onKeyDown={(e) => handleKeyDown(e, i)}
@@ -245,7 +260,7 @@ const QuestionComponent = ({ questions }) => {
                   variant="outline" 
                   className="min-w-[140px] h-14 bg-white dark:bg-slate-900 text-red-500 border-slate-200 dark:border-slate-800 hover:border-red-500 dark:hover:border-red-500 border-2 rounded-xl font-bold uppercase tracking-tight transition-all flex gap-2" 
                   onClick={handleResetInput} 
-                  disabled={isSuccess || secondsLeft === 0 || isTransitioning.current}
+                  disabled={isSuccess || isTransitioning.current}
                 >
                   <RotateCcw size={16} />
                   Reset
@@ -271,7 +286,7 @@ const QuestionComponent = ({ questions }) => {
                 <h1 className='text-2xl mb-2 font-black uppercase tracking-tight text-slate-900 dark:text-white'>Well Done!</h1>
                 <p className="text-slate-500 dark:text-slate-400 mb-8 font-medium">Category completed successfully.</p>
                 <Link href='/categories' className="w-full">
-                  <Button className="w-full h-14 rounded-xl text-lg font-bold bg-blue-600 hover:bg-blue-700">Back to Dashboard</Button>
+                  <Button className="w-full h-14 rounded-xl text-lg font-bold bg-blue-600 hover:bg-blue-700">Back to Categories</Button>
                 </Link>
               </div>
             </div>

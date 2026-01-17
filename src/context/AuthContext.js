@@ -4,8 +4,10 @@ import { auth, db }  from '@/lib/firebase';
 import { useState, useEffect, createContext, useContext} from 'react';
 import {
   createUserWithEmailAndPassword,
+  GoogleAuthProvider,
   onAuthStateChanged,
   signInWithEmailAndPassword,
+  signInWithPopup,
   signOut,
 } from 'firebase/auth';
 
@@ -117,7 +119,19 @@ export function AuthProvider({ children }) {
     return userCredentials
      
   }
-  const value = { user, loading, signUp, login, logout, username };
+
+  const signInWithGoogle = async () => {
+    const provider = new GoogleAuthProvider();
+    try{
+      const result = await signInWithPopup(auth, provider)
+      return result.user
+    }catch(error){
+      console.error("Google sign-in error", error)
+      throw error
+    }
+
+  }
+  const value = { user, loading, signInWithGoogle,  signUp, login, logout, username };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
