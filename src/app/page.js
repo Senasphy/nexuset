@@ -15,7 +15,7 @@ export default function Home(){
   }
   useEffect(()=>{
     if (!loading){
-      router.push('/dashboard')
+      router.push('/login')
     } }, [loading])
   return  user ? children : null
 }
