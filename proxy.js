@@ -6,7 +6,7 @@ const protectedPaths = [
   // add more paths you want to protect
 ]
 
-export function middleware(request) {
+export function proxy(request) {
   const { pathname } = request.nextUrl
 
   // Skip if the path doesn't start with any protected path

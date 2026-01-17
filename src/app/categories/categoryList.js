@@ -6,6 +6,7 @@ const categories = [{
     rating: 4.7,
     icon: "replace icon",
     background: "#F3C5C5",
+    backgroundImage: "general.jpg",
     tailwind: "general_card"
 }, 
 {
@@ -15,6 +16,7 @@ const categories = [{
     rating: 4.8,
     icon: "replace with icon",
     background: "#F9E1C0",
+    backgroundImage: "mathematics.jpg",
     tailwind: "maths_card"
 
 },
@@ -25,6 +27,7 @@ const categories = [{
     rating: 4.8,
     icon: "replace with icon",
     background: "#C0F1DC",
+    backgroundImage: "science.jpg",
     tailwind: "science_card"
 },
 {
@@ -34,6 +37,7 @@ const categories = [{
     rating: 4.8,
     icon: "replace with icon",
     background: "#F8B575",
+    backgroundImage: "english.jpg",
     tailwind: "english_card"
 },
 {
@@ -43,6 +47,7 @@ const categories = [{
     rating: 4.8,
     icon: "replace with icon",
     background: "#D5D3FF",
+    backgroundImage: "geography.jpg",
     tailwind: "geography_card"
 },
 ]

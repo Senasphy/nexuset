@@ -13,7 +13,7 @@ const CategoryPage = () => {
   const { username, logout } = useAuth()
   const router = useRouter()
 
-  const { setIsSidebarOpen, isSidebarOpen, category, setCategory } = useQuizStore(
+  const { setIsSidebarOpen, isSidebarOpen, } = useQuizStore(
     useShallow((state) => ({
       setIsSidebarOpen: state.setIsSidebarOpen,
       isSidebarOpen: state.isSidebarOpen,
@@ -42,20 +42,21 @@ const CategoryPage = () => {
       )}
 
       {/* Header - glassmorphism */}
-      <header className="sticky top-0 z-40 bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border-b border-white/20 dark:border-slate-700/30 shadow-sm">
-        <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+      <header className="sticky flex items-between w-full top-0 z-40 bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border-b border-white/20 dark:border-slate-700/30 shadow-sm">
+        <div className=" w-full mx-auto px-5 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
           <button
             onClick={handleSignOut}
             className="group flex items-center gap-2.5 text-neutral-700 dark:text-neutral-300 hover:text-red-600 dark:hover:text-red-400 transition-all font-medium"
           >
-            <LogOut size={18} className="group-hover:rotate-12 transition-transform duration-300" />
+            <LogOut size={18} />
             <span className="text-base sm:text-lg">Sign out</span>
           </button>
+
 
           <Button
             variant="ghost"
             size="icon"
-            className="lg:hidden h-12 w-12 rounded-full bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm border border-white/30 dark:border-slate-600/40 hover:bg-white/80 dark:hover:bg-slate-700/80 transition-all shadow-sm"
+            className="h-12 w-12 rounded-full bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm border border-white/30 dark:border-slate-600/40 hover:bg-white/80 dark:hover:bg-slate-700/80 transition-all shadow-sm"
             onClick={() => setIsSidebarOpen(true)}
           >
             <Menu className="h-7 w-7 text-neutral-700 dark:text-neutral-300" strokeWidth={2.2} />
@@ -80,19 +81,9 @@ const CategoryPage = () => {
         </div>
 
         {/* Categories */}
-        <div className="grid gap-6 sm:gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid gap-6 sm:gap-8 sm:grid-cols-2 lg:grid-cols-3  ">
           {categories.map((item) => (
-            <button
-              key={item.name}
-              onClick={() => {
-                setIsSidebarOpen(false)
-                setCategory(item.name.toLowerCase())
-              }}
-              className="group relative block h-full transition-all duration-400 hover:-translate-y-3 hover:shadow-2xl active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500/50 rounded-2xl overflow-hidden"
-            >
-              <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10" />
-              <CategoryCard category={item} />
-            </button>
+            <CategoryCard category={item} />
           ))}
         </div>
       </main>
