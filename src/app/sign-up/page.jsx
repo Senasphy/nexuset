@@ -4,6 +4,7 @@ import { useAuth } from '@/context/AuthContext'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import Link from 'next/link'
+import Cookies from 'js-cookie'
 
 export default function SignupPage() {
   const { signUp, signInWithGoogle } = useAuth()
@@ -42,6 +43,8 @@ export default function SignupPage() {
 
     try {
       await signUp(email, password, username)
+
+      Cookies.set('session', 'true', { expires: 7 })
       router.push('/categories')
     } catch (err) {
       setError(err.message || 'Failed to create account')
@@ -54,6 +57,8 @@ export default function SignupPage() {
     setError(null);
     try {
       await signInWithGoogle();
+
+      Cookies.set('session', 'true', { expires: 7 })
       router.push('/categories');
     } catch (err) {
       setError("Failed to sign in with Google. Try again?");
@@ -143,9 +148,9 @@ export default function SignupPage() {
           </form>
 
           <div className="mt-8 flex items-center justify-between">
-            <span className="w-1/5 border-b border-gray-300 dark:border-white/5"></span>
-            <span className="text-xs text-gray-400 dark:text-slate-600 uppercase tracking-widest font-bold">or continue with</span>
-            <span className="w-1/5 border-b border-gray-300 dark:border-white/5"></span>
+            <span className="w-1/4 border-b border-gray-300 dark:border-white/5"></span>
+            <span className="text-md text-gray-400 dark:text-slate-600   font-bold">or continue with</span>
+            <span className="w-1/4 border-b border-gray-300 dark:border-white/5"></span>
           </div>
 
           <div className="mt-6 flex gap-4">
@@ -158,9 +163,9 @@ export default function SignupPage() {
             </button>
           </div>
 
-          <p className="mt-10 text-center text-sm text-gray-600 dark:text-slate-500">
+          <p className="mt-10 text-center text-md text-gray-600 dark:text-slate-500">
             Already have an account?{' '}
-            <Link href="/login" className="text-blue-600 dark:text-blue-400 font-semibold hover:underline">
+            <Link href="/login" className="text-blue-600  dark:text-blue-400 font-semibold hover:underline">
               Log in
             </Link>
           </p>

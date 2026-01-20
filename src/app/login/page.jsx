@@ -4,6 +4,7 @@ import { useAuth } from '@/context/AuthContext'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import Link from 'next/link'
+import Cookies from 'js-cookie'
 
 export default function LoginPage() {
   const { login, signInWithGoogle} = useAuth()
@@ -29,6 +30,8 @@ export default function LoginPage() {
 
     try {
       await login(email, password)
+
+      Cookies.set('session', 'true', { expires: 7 })
       router.push('/categories')
     } catch (err) {
       setError(err.message || 'Invalid email or password')
@@ -41,6 +44,8 @@ export default function LoginPage() {
     setError(null);
     try {
       await signInWithGoogle();
+
+      Cookies.set('session', 'true', { expires: 7 })
       router.push('/categories');
     } catch (err) {
       setError("Failed to sign in with Google. Try again?");
@@ -117,7 +122,7 @@ export default function LoginPage() {
 
           <div className="mt-8 flex items-center justify-between">
             <span className="w-1/4 border-b border-gray-300 dark:border-white/5"></span>
-            <span className="text-sm text-gray-400 dark:text-slate-600 uppercase tracking-widest font-bold">or continue with</span>
+            <span className="text-md text-gray-400 dark:text-slate-600   font-bold">or continue with</span>
             <span className="w-1/4 border-b border-gray-300 dark:border-white/5"></span>
           </div>
 
