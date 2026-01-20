@@ -24,7 +24,7 @@ const [filteredData, setFilteredData] = useState(data)
 
         return (
 
-            <div className='h-screen bg-lightDot-bg   dark:bg-darkDot-bg overflow-hidden border-2 rounded-lg' >
+            <div className='h-screen bg-lightDot-bg    overflow-hidden border-2 rounded-lg' >
         {filteredData && <Question question={filteredData[0]} /> }
           {console.log("Filtered Data: ", filteredData)}
          
