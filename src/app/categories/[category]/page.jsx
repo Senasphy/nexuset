@@ -19,9 +19,9 @@ export default function QuestionsPage() {
     }, [data, difficulty])
 
     if (isLoading) return (
-        <div className='flex gap-2 justify-center items-center w-full h-screen'>
-            <Loader className='animate-spin' />Loading...
-        </div>
+         <div className="animate-text-gradient font-heading inline-flex bg-linear-to-r from-[#ACACAC] via-[#363636] to-[#ACACAC] bg-[200%_auto] bg-clip-text text-3xl text-transparent">
+      I am thinking...
+    </div>
     )
     
     if (error) return <div className="h-screen flex items-center justify-center">Error: {error.message}</div>

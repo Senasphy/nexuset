@@ -58,7 +58,7 @@ function Sidebar() {
         bg-white dark:bg-[#0a0f1e]
         border-l border-slate-200 dark:border-white/5
         shadow-2xl
-        transform transition-transform duration-500 ease-in-out
+        transform transition-transform duration-200 ease-in-out
         ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full'}
       `}
     >
@@ -99,11 +99,10 @@ function Sidebar() {
             </Select>
           </div>
 
-          {/* Appearance */}
           <div className="space-y-2">
             <label className="flex items-center gap-2 text-sm font-semibold text-slate-500 dark:text-slate-400">
               {theme === 'dark' ? <Moon size={16} className="text-blue-500" /> : <Sun size={16} className="text-blue-500" />}
-              Appearance
+              Theme
             </label>
             <Select value={theme ?? 'system'} onValueChange={setTheme}>
               <SelectTrigger className="h-12 border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 text-slate-900 dark:text-white font-medium rounded-xl">

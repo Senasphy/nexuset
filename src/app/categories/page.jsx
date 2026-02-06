@@ -25,6 +25,7 @@ const CategoryPage = () => {
   const handleSignOut = async () => {
     try {
       await logout()
+      console.log("Logged out")
       router.push('/login')
     } catch (err) {
       console.error('Error signing out:', err)
