@@ -75,6 +75,7 @@ const QuestionComponent = ({ questions, categoryName }) => {
   const [secondsLeft, setSecondsLeft] = useState(countdownTime)
   const [isPauseOpen, setIsPauseOpen] = useState(false)
   const [revealedIndices, setRevealedIndices] = useState(new Array(word.length).fill(false))
+  const [hasUsedHint, setHasUsedHint] = useState(false)
 
   // Initialization
   useEffect(() => {
@@ -116,6 +117,7 @@ const QuestionComponent = ({ questions, categoryName }) => {
     setIsError(false)
     setIsSuccess(false)
     setSecondsLeft(countdownTime)
+    setHasUsedHint(false)
 
     if (!isPaused) startCountdown()
 
@@ -193,12 +195,13 @@ const QuestionComponent = ({ questions, categoryName }) => {
   }
 
   const handleHint = () => {
-    if (secondsLeft === 0 || isSuccess || isTransitioning.current || isPaused) return
+    if (secondsLeft === 0 || isSuccess || isTransitioning.current || isPaused || hasUsedHint) return
     const nextIndex = userAnswer.findIndex((letter, idx) => !letter && !revealedIndices[idx])
     if (nextIndex === -1) return
     const newAnswer = [...userAnswer]
     newAnswer[nextIndex] = word[nextIndex] || ""
     setUserAnswer(newAnswer)
+    setHasUsedHint(true)
     setRevealedIndices((prev) => {
       const next = [...prev]
       next[nextIndex] = true
@@ -364,7 +367,7 @@ const QuestionComponent = ({ questions, categoryName }) => {
                   variant="ghost"
                   size="sm"
                   onClick={handleHint}
-                  disabled={isSuccess || isTransitioning.current || userAnswer.every((letter) => letter)}
+                  disabled={hasUsedHint || isSuccess || isTransitioning.current || userAnswer.every((letter) => letter)}
                 >
                   <Lightbulb className="h-4 w-4" />
                   Hint
