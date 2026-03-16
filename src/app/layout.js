@@ -1,8 +1,8 @@
-import { AuthProvider } from "@/context/AuthContext";
+import { AuthProvider } from "../context/AuthContext";
 import { ThemeProvider } from 'next-themes'
 import QueryProvider from '../lib/queryClient'
 import "./globals.css";
-import {Inter} from 'next/font/google'
+import { Fraunces, DM_Sans, DM_Mono } from 'next/font/google'
 
 export const metadata = {
   title: "Next Spelling",
@@ -13,15 +13,31 @@ export const metadata = {
  
 };
 
-const inter  = Inter({
-  subsets:['latin'],
-  display:'swap',
+const fraunces = Fraunces({
+  subsets: ['latin'],
+  weight: ['300', '600'],
+  variable: '--font-display',
+  display: 'swap',
+})
+
+const dmSans = DM_Sans({
+  subsets: ['latin'],
+  weight: ['400', '500'],
+  variable: '--font-sans',
+  display: 'swap',
+})
+
+const dmMono = DM_Mono({
+  subsets: ['latin'],
+  weight: ['400', '500'],
+  variable: '--font-mono',
+  display: 'swap',
 })
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+      <body className={`${fraunces.variable} ${dmSans.variable} ${dmMono.variable}`}>
 
         <AuthProvider>
           <QueryProvider>

@@ -19,17 +19,17 @@ export default function QuestionsPage() {
     }, [data, difficulty])
 
     if (isLoading) return (
-         <div className="animate-text-gradient font-heading inline-flex bg-linear-to-r from-[#ACACAC] via-[#363636] to-[#ACACAC] bg-[200%_auto] bg-clip-text text-3xl text-transparent">
-      I am thinking...
-    </div>
+        <div className="min-h-screen flex items-center justify-center bg-[var(--bg-base)] text-base-body text-[var(--text-secondary)]">
+            Loading session...
+        </div>
     )
     
-    if (error) return <div className="h-screen flex items-center justify-center">Error: {error.message}</div>
-    if (!data || (filteredData && filteredData.length === 0)) return <div className="h-screen flex items-center justify-center">No data available for this criteria.</div>
+    if (error) return <div className="min-h-screen flex items-center justify-center bg-[var(--bg-base)] text-base-body text-[var(--text-secondary)]">Error: {error.message}</div>
+    if (!data || (filteredData && filteredData.length === 0)) return <div className="min-h-screen flex items-center justify-center bg-[var(--bg-base)] text-base-body text-[var(--text-secondary)]">No data available for this criteria.</div>
 
     return (
-        <div className='h-screen bg-lightDot-bg dark:bg-darkDot-bg overflow-hidden  g'>
-            {filteredData && <QuestionComponent questions={filteredData} />}
+        <div className='min-h-screen bg-[var(--bg-base)]'>
+            {filteredData && <QuestionComponent questions={filteredData} categoryName={category} />}
         </div>
     )
 }

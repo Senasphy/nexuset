@@ -16,11 +16,11 @@ export default {
   theme: {
   	extend: {
   		colors: {
-  			background: 'hsl(var(--background))',
-  			foreground: 'hsl(var(--foreground))',
+  			background: 'var(--bg-base)',
+  			foreground: 'var(--text-primary)',
   			card: {
-  				DEFAULT: 'hsl(var(--card))',
-  				foreground: 'hsl(var(--card-foreground))'
+  				DEFAULT: 'var(--bg-surface)',
+  				foreground: 'var(--text-primary)'
   			},
         card_general: "#F3C5C5",
         card_science: "#C0F1DC",
@@ -28,40 +28,33 @@ export default {
         card_english : "#F8B575", 
         card_geography:  "#D5D3FF",
   			popover: {
-  				DEFAULT: 'hsl(var(--popover))',
-  				foreground: 'hsl(var(--popover-foreground))'
+  				DEFAULT: 'var(--bg-surface)',
+  				foreground: 'var(--text-primary)'
   			},
   			primary: {
-  				DEFAULT: 'hsl(var(--primary))',
-  				foreground: 'hsl(var(--primary-foreground))'
+  				DEFAULT: 'var(--accent)',
+  				foreground: '#ffffff'
   			},
   			secondary: {
-  				DEFAULT: 'hsl(var(--secondary))',
-  				foreground: 'hsl(var(--secondary-foreground))'
+  				DEFAULT: 'var(--bg-elevated)',
+  				foreground: 'var(--text-primary)'
   			},
   			muted: {
-  				DEFAULT: 'hsl(var(--muted))',
-  				foreground: 'hsl(var(--muted-foreground))'
+  				DEFAULT: 'var(--bg-elevated)',
+  				foreground: 'var(--text-muted)'
   			},
   			accent: {
-  				DEFAULT: 'hsl(var(--accent))',
-  				foreground: 'hsl(var(--accent-foreground))'
+  				DEFAULT: 'var(--accent)',
+  				foreground: '#ffffff'
   			},
   			destructive: {
-  				DEFAULT: 'hsl(var(--destructive))',
-  				foreground: 'hsl(var(--destructive-foreground))'
+  				DEFAULT: 'var(--wrong)',
+  				foreground: '#ffffff'
   			},
-        custom: 'hsl(var(--border))',
- 			border: 'hsl(var(--border))',
-  			input: 'hsl(var(--input))',
-  			ring: 'hsl(var(--ring))',
-  			chart: {
-  				'1': 'hsl(var(--chart-1))',
-  				'2': 'hsl(var(--chart-2))',
-  				'3': 'hsl(var(--chart-3))',
-  				'4': 'hsl(var(--chart-4))',
-  				'5': 'hsl(var(--chart-5))'
-  			}
+        custom: 'var(--border)',
+ 			border: 'var(--border)',
+  			input: 'var(--border)',
+  			ring: 'var(--accent)',
   		},
   		borderRadius: {
   			lg: 'var(--radius)',

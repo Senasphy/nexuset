@@ -1,53 +1,61 @@
 "use client"
 import { useState, useEffect, useRef } from 'react'
 import { useSwipeable } from 'react-swipeable'
-import { Pause, X, RotateCcw } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { ArrowLeft, Lightbulb, Pause } from 'lucide-react'
 import Link from 'next/link'
 import { useShallow } from 'zustand/react/shallow'
 import useQuizStore from '@/stores/quizStore'
 import useScoreStore from '@/stores/scoreStore'
 import { Button } from '@/components/ui/button'
 import QuestionSidebar from '@/components/QuestionSidebar'
-import { useAuth } from '@/context/AuthContext'
 import useTimerStore from '@/stores/timerStore'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Progress } from '@/components/ui/progress'
 
-const QuestionComponent = ({ questions }) => {
+const QuestionComponent = ({ questions, categoryName }) => {
   const {
     index,
     incrementIndex,
     decrementIndex,
     isPaused,
-    toggleIsPaused,
     setIsPaused, // New setter
     isFinished,
     setIsFinished,
     resetIndex,
+    setIsSidebarOpen,
   } = useQuizStore(
     useShallow((s) => ({
       index: s.index,
       incrementIndex: s.incrementIndex,
       decrementIndex: s.decrementIndex,
       isPaused: s.isPaused,
-      toggleIsPaused: s.toggleIsPaused,
       setIsPaused: s.setIsPaused,
       isFinished: s.isFinished,
       setIsFinished: s.setIsFinished,
       resetIndex: s.resetIndex,
+      setIsSidebarOpen: s.setIsSidebarOpen,
     }))
   )
-  const { incrementScore, resetScore } = useScoreStore(
+  const { incrementScore, resetScore, currentScore } = useScoreStore(
     useShallow((s) => ({
       incrementScore: s.incrementScore,
-      resetScore: s.resetScore
+      resetScore: s.resetScore,
+      currentScore: s.currentScore,
     }))
   )
 
-  const { countdownTime } = useTimerStore();
-  const { username } = useAuth();
-
+  const { countdownTime, pauseTimer, startTimer, resetTimer } = useTimerStore(
+    useShallow((s) => ({
+      countdownTime: s.countdownTime,
+      pauseTimer: s.pauseTimer,
+      startTimer: s.startTimer,
+      resetTimer: s.resetTimer,
+    }))
+  );
   if (!questions?.length) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-xl text-muted-foreground bg-white dark:bg-slate-950">
+      <div className="min-h-screen flex items-center justify-center bg-[var(--bg-base)] text-base-body text-[var(--text-secondary)]">
         Loading questions...
       </div>
     )
@@ -65,6 +73,8 @@ const QuestionComponent = ({ questions }) => {
   const [isError, setIsError] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const [secondsLeft, setSecondsLeft] = useState(countdownTime)
+  const [isPauseOpen, setIsPauseOpen] = useState(false)
+  const [revealedIndices, setRevealedIndices] = useState(new Array(word.length).fill(false))
 
   // Initialization
   useEffect(() => {
@@ -78,14 +88,7 @@ const QuestionComponent = ({ questions }) => {
     return () => clearTimeout(init)
   }, [])  
 
-  // Question / Timer Logic
-  useEffect(() => {
-    isTransitioning.current = false
-    setUserAnswer(new Array(word.length).fill(""))
-    setIsError(false)
-    setIsSuccess(false)
-    setSecondsLeft(countdownTime) // Using the constant value
-
+  const startCountdown = () => {
     if (timerRef.current) clearInterval(timerRef.current)
 
     timerRef.current = setInterval(() => {
@@ -103,6 +106,18 @@ const QuestionComponent = ({ questions }) => {
         return prev - 1
       })
     }, 1000)
+  }
+
+  // Question / Timer Logic
+  useEffect(() => {
+    isTransitioning.current = false
+    setUserAnswer(new Array(word.length).fill(""))
+    setRevealedIndices(new Array(word.length).fill(false))
+    setIsError(false)
+    setIsSuccess(false)
+    setSecondsLeft(countdownTime)
+
+    if (!isPaused) startCountdown()
 
     const focusTimer = setTimeout(() => {
       inputRefs.current[0]?.focus()
@@ -112,19 +127,39 @@ const QuestionComponent = ({ questions }) => {
       clearInterval(timerRef.current)
       clearTimeout(focusTimer)
     }
-  }, [safeIndex, word, countdownTime, isPaused]) // Added isPaused to sync timer accurately
+  }, [safeIndex, word, countdownTime]) // Reset timer on question change
 
-  const handlePause = () => toggleIsPaused()
+  useEffect(() => {
+    if (isPaused) {
+      if (timerRef.current) clearInterval(timerRef.current)
+      return
+    }
+    if (!isFinished) startCountdown()
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current)
+    }
+  }, [isPaused, isFinished, safeIndex])
 
-  const handleResetInput = () => {
-    if (timerRef.current) clearInterval(timerRef.current)
-    setUserAnswer(new Array(word.length).fill(""))
-    setIsError(false)
-    setIsSuccess(false)
-    setSecondsLeft(countdownTime) // Reset local timer to constant
-    resetIndex(0)
-    setIsPaused(false) // Force unpause on reset
-    inputRefs.current[0]?.focus()
+  const evaluateAnswer = (answer) => {
+    if (answer.some((letter) => !letter)) return
+    const answerStr = answer.join("")
+    const isCorrect = answerStr === word
+
+    setIsSuccess(isCorrect)
+    setIsError(!isCorrect)
+
+    clearInterval(timerRef.current)
+    isTransitioning.current = true
+
+    if (isCorrect) incrementScore()
+
+    setTimeout(() => {
+      if (safeIndex < questions.length - 1) {
+        incrementIndex()
+      } else {
+        setIsFinished(true)
+      }
+    }, 2000)
   }
 
   const handleInputChange = (e, i) => {
@@ -134,32 +169,21 @@ const QuestionComponent = ({ questions }) => {
     newAnswer[i] = char
     setUserAnswer(newAnswer)
 
+    if (revealedIndices[i]) {
+      setRevealedIndices((prev) => {
+        const next = [...prev]
+        next[i] = false
+        return next
+      })
+    }
+
     if (isError) setIsError(false)
 
     if (char && i < word.length - 1) {
       inputRefs.current[i + 1]?.focus()
     }
 
-    if (newAnswer.join("").length === word.length) {
-      const answerStr = newAnswer.join("")
-      const isCorrect = answerStr === word;
-
-      setIsSuccess(isCorrect)
-      setIsError(!isCorrect)
-
-      clearInterval(timerRef.current)
-      isTransitioning.current = true
-
-      if (isCorrect) incrementScore()
-
-      setTimeout(() => {
-        if (safeIndex < questions.length - 1) {
-          incrementIndex()
-        } else {
-          setIsFinished(true)
-        }
-      }, 2000)
-    }
+    evaluateAnswer(newAnswer)
   }
 
   const handleKeyDown = (e, i) => {
@@ -168,132 +192,272 @@ const QuestionComponent = ({ questions }) => {
     }
   }
 
+  const handleHint = () => {
+    if (secondsLeft === 0 || isSuccess || isTransitioning.current || isPaused) return
+    const nextIndex = userAnswer.findIndex((letter, idx) => !letter && !revealedIndices[idx])
+    if (nextIndex === -1) return
+    const newAnswer = [...userAnswer]
+    newAnswer[nextIndex] = word[nextIndex] || ""
+    setUserAnswer(newAnswer)
+    setRevealedIndices((prev) => {
+      const next = [...prev]
+      next[nextIndex] = true
+      return next
+    })
+    if (nextIndex < word.length - 1) {
+      inputRefs.current[nextIndex + 1]?.focus()
+    }
+    evaluateAnswer(newAnswer)
+  }
+
+  const handleCheck = () => {
+    if (secondsLeft === 0 || isSuccess || isTransitioning.current || isPaused) return
+    evaluateAnswer(userAnswer)
+  }
+
+  const handlePause = () => {
+    if (timerRef.current) clearInterval(timerRef.current)
+    pauseTimer()
+    setIsPaused(true)
+    setIsPauseOpen(true)
+  }
+
+  const handleResume = () => {
+    if (timerRef.current) clearInterval(timerRef.current)
+    startTimer()
+    setIsPaused(false)
+    setIsPauseOpen(false)
+  }
+
+  const handleRestart = () => {
+    if (timerRef.current) clearInterval(timerRef.current)
+    resetTimer()
+    resetScore()
+    resetIndex()
+    setSecondsLeft(countdownTime)
+    setIsFinished(false)
+    setIsPaused(false)
+    startTimer()
+    setIsPauseOpen(false)
+  }
+
   const handlers = useSwipeable({
     onSwipedLeft: () => !isTransitioning.current && incrementIndex(),
     onSwipedRight: () => !isTransitioning.current && decrementIndex(),
     trackMouse: true,
   })
 
+  const wordHint = word.length
+    ? `[ ${new Array(word.length).fill("_").join(" ")} ]`
+    : ""
+  const displayCategory = categoryName
+    ? categoryName.charAt(0).toUpperCase() + categoryName.slice(1)
+    : "Session"
+  const scorePercent = questions?.length
+    ? Math.round((currentScore / questions.length) * 100)
+    : 0
+  const scoreColor =
+    scorePercent >= 80
+      ? "var(--correct)"
+      : scorePercent >= 50
+        ? "var(--accent)"
+        : "var(--wrong)"
+
   return (
-    <div className="flex justify-center items-center min-h-screen bg-white dark:bg-slate-950 transition-colors duration-500">
-      <div className="flex-1 flex flex-col items-center px-5 sm:px-8 lg:px-12 py-8 lg:py-12">
-        <div className="w-full max-w-4xl flex flex-col items-center gap-10 sm:gap-12" {...handlers}>
-          
-          {/* Progress Bar */}
-          <div className="fixed top-0 left-0 right-0 h-1.5 bg-slate-100 dark:bg-slate-800 z-50 lg:right-[360px]">
+    <div className="min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)]">
+      <header className="sticky top-0 z-40 h-16 border-b border-[var(--border)] bg-[var(--bg-base)]">
+        <div className="mx-auto flex h-full max-w-6xl items-center justify-between px-6">
+          <div className="flex items-center gap-4">
+            <Link
+              href="/categories"
+              className="flex items-center gap-2 rounded-[8px] border border-[var(--border)] px-3 py-2 text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)]"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back
+            </Link>
+            <span className="hidden text-xl-ui text-[var(--text-primary)] sm:inline">
+              {displayCategory}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-4">
             <div
-              className="h-full bg-blue-500 transition-all duration-700 ease-in-out shadow-[0_0_10px_rgba(59,130,246,0.5)]"
-              style={{ width: `${((safeIndex + 1) / questions.length) * 100}%` }}
-            />
+              className="font-mono text-[1.25rem] font-medium"
+              style={{
+                color:
+                  secondsLeft <= 5
+                    ? "var(--wrong)"
+                    : secondsLeft <= 10
+                      ? "var(--accent)"
+                      : "var(--text-primary)",
+              }}
+            >
+              {secondsLeft}s
+            </div>
+            <button
+              onClick={handlePause}
+              className="flex h-9 w-9 items-center justify-center rounded-[6px] border border-[var(--border)] text-[var(--text-primary)] transition-colors hover:bg-[var(--bg-elevated)]"
+              aria-label="Pause session"
+            >
+              <Pause className="h-4 w-4" />
+            </button>
           </div>
+        </div>
+      </header>
 
-          {/* Top Controls */}
-          <div className="fixed top-4 left-4 right-4 z-40 flex justify-between items-center lg:left-12 lg:right-[384px]">
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-6 py-3 rounded-xl shadow-sm">
-              <span className={`text-2xl font-bold tabular-nums tracking-tighter ${secondsLeft <= 5 ? 'text-red-500 animate-pulse' : 'text-slate-900 dark:text-slate-100'}`}>
-                {secondsLeft}s
-              </span>
+      <div className="mx-auto flex w-full max-w-6xl gap-8 px-6 py-8">
+        <QuestionSidebar totalQuestions={questions.length} />
+        <main className="flex min-h-[calc(100vh-64px)] flex-1 flex-col justify-center">
+          <div className="mx-auto flex w-full max-w-3xl flex-col items-center gap-8" {...handlers}>
+            <div className="w-full rounded-[12px] border border-[var(--border)] bg-[var(--bg-surface)] p-6">
+              <div className="mb-3 flex items-center justify-between">
+                <span className="text-xs-label text-[var(--text-muted)]">Definition</span>
+              </div>
+              <p className="text-lg-body text-[var(--text-primary)]">
+                {currentQuestion?.definition}
+              </p>
+              <p className="mt-4 font-mono text-[0.95rem] text-[var(--text-muted)]">{wordHint}</p>
             </div>
 
-            <div className="flex items-center gap-4 lg:hidden">
-              <button onClick={handlePause} disabled={isFinished} className="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all shadow-sm group">
-                <Pause className="h-6 w-6 text-slate-900 dark:text-slate-100 group-hover:text-blue-500 transition-colors" strokeWidth={2.5} />
-              </button>
-            </div>
-          </div>
+            <ul className="flex flex-wrap justify-center gap-[6px]">
+              {userAnswer.map((char, i) => {
+                const isRevealed = revealedIndices[i]
+                const stateClass = isSuccess
+                  ? "border-[var(--correct-border)] bg-[var(--correct-bg)] text-[var(--correct)]"
+                  : isError
+                    ? "border-[var(--wrong-border)] bg-[var(--wrong-bg)] text-[var(--wrong)]"
+                    : isRevealed
+                      ? "border-[var(--border-strong)] border-dashed bg-[var(--neutral-letter)] text-[var(--text-muted)]"
+                      : "border-[var(--border)] bg-[var(--neutral-letter)] text-[var(--text-primary)]"
 
-          <div className="mt-20 lg:mt-16 w-full flex flex-col items-center gap-12">
-            
-            {/* Input Grid */}
-            <ul className="flex gap-3 flex-wrap justify-center">
-              {userAnswer.map((char, i) => (
-                <li key={i}>
-                  <input
-                    type="text"
-                    maxLength={1}
-                    value={char}
-                    disabled={secondsLeft === 0 || isSuccess || isTransitioning.current || isPaused}
-                    ref={(el) => (inputRefs.current[i] = el)}
-                    onChange={(e) => handleInputChange(e, i)}
-                    onKeyDown={(e) => handleKeyDown(e, i)}
-                    className={`h-16 w-12 text-center rounded-xl text-3xl border-2 transition-all outline-none uppercase font-bold
-                      ${isSuccess 
-                        ? 'border-green-500 bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400' 
-                        : isError 
-                          ? 'border-red-500 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 animate-shake' 
-                          : 'border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:border-blue-500 focus:bg-white dark:focus:bg-black'}`}
-                  />
-                </li>
-              ))}
+                return (
+                  <li key={i}>
+                    <input
+                      type="text"
+                      maxLength={1}
+                      value={char}
+                      disabled={secondsLeft === 0 || isSuccess || isTransitioning.current || isPaused}
+                      ref={(el) => (inputRefs.current[i] = el)}
+                      onChange={(e) => handleInputChange(e, i)}
+                      onKeyDown={(e) => handleKeyDown(e, i)}
+                      className={`text-letter h-[60px] w-[52px] rounded-[8px] border-2 text-center uppercase outline-none shadow-[inset_0_1px_3px_rgba(0,0,0,0.06)] transition-all focus:scale-[1.05] focus:border-[var(--border-strong)] focus:shadow-[0_0_0_2px_var(--accent-ring)] ${stateClass} ${isSuccess ? "animate-letter-correct" : ""} ${isError ? "animate-letter-wrong" : ""}`}
+                      style={{
+                        animationDelay: isSuccess ? `${i * 40}ms` : "0ms",
+                      }}
+                    />
+                  </li>
+                )
+              })}
             </ul>
 
-            {/* Definition Box */}
-            <div className="w-full max-w-2xl p-8 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-2xl bg-slate-50/50 dark:bg-slate-900/50 text-center relative overflow-hidden">
-              <span className="block text-[10px] uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 mb-4 font-black">Definition</span>
-              <p className="text-xl font-medium leading-relaxed text-slate-800 dark:text-slate-100">
-                "{currentQuestion?.definition}"
-              </p>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="w-full max-w-4xl mt-4">
-              <div className="flex flex-wrap justify-center gap-4">
-                <Button 
-                  variant="outline" 
-                  className="min-w-[140px] h-14 bg-white dark:bg-slate-900 text-slate-900 dark:text-white border-slate-200 dark:border-slate-800 hover:border-blue-500 dark:hover:border-blue-500 border-2 rounded-xl font-bold uppercase tracking-tight transition-all" 
-                  onClick={decrementIndex} 
-                  disabled={safeIndex === 0 || isTransitioning.current}
-                >
-                  Previous
-                </Button>
-                
-                <Button 
-                  variant="outline" 
-                  className="min-w-[140px] h-14 bg-white dark:bg-slate-900 text-slate-900 dark:text-white border-slate-200 dark:border-slate-800 hover:border-blue-500 dark:hover:border-blue-500 border-2 rounded-xl font-bold uppercase tracking-tight transition-all" 
-                  onClick={() => !isTransitioning.current && incrementIndex()} 
+            <div className="flex w-full items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => !isTransitioning.current && incrementIndex()}
                   disabled={safeIndex === questions.length - 1 || isTransitioning.current}
                 >
                   Skip
                 </Button>
-
-                <Button 
-                  variant="outline" 
-                  className="min-w-[140px] h-14 bg-white dark:bg-slate-900 text-red-500 border-slate-200 dark:border-slate-800 hover:border-red-500 dark:hover:border-red-500 border-2 rounded-xl font-bold uppercase tracking-tight transition-all flex gap-2" 
-                  onClick={handleResetInput} 
-                  disabled={isSuccess || isTransitioning.current}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleHint}
+                  disabled={isSuccess || isTransitioning.current || userAnswer.every((letter) => letter)}
                 >
-                  <RotateCcw size={16} />
-                  Reset
+                  <Lightbulb className="h-4 w-4" />
+                  Hint
                 </Button>
               </div>
+              <Button
+                variant="primary"
+                onClick={handleCheck}
+                disabled={isSuccess || isTransitioning.current || userAnswer.some((letter) => !letter)}
+              >
+                Check →
+              </Button>
             </div>
+
+            <Progress value={((safeIndex + 1) / questions.length) * 100} className="h-1 w-full" />
           </div>
-
-          {/* Modals */}
-          {isPaused && (
-            <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center z-[1000] px-6">
-              <div className='w-full max-w-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-10 text-center shadow-2xl'>
-                <h1 className='text-2xl mb-8 font-black uppercase tracking-tight text-slate-900 dark:text-white'>Game Paused</h1>
-                <Button className="w-full h-14 rounded-xl text-lg font-bold bg-blue-600 hover:bg-blue-700" onClick={handlePause}>Resume Play</Button>
-              </div>
-            </div>
-          )}
-
-          {isFinished && (
-            <div className='fixed inset-0 flex items-center justify-center bg-slate-900/80 backdrop-blur-lg z-[1000] px-6'>
-              <div className='w-full max-w-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-10 text-center shadow-2xl'>
-                <div className="mb-4 text-5xl">🎉</div>
-                <h1 className='text-2xl mb-2 font-black uppercase tracking-tight text-slate-900 dark:text-white'>Well Done!</h1>
-                <p className="text-slate-500 dark:text-slate-400 mb-8 font-medium">Category completed successfully.</p>
-                <Link href='/categories' className="w-full">
-                  <Button className="w-full h-14 rounded-xl text-lg font-bold bg-blue-600 hover:bg-blue-700">Back to Categories</Button>
-                </Link>
-              </div>
-            </div>
-          )}
-        </div>
+        </main>
       </div>
-      <QuestionSidebar />
+
+      <Dialog open={isPauseOpen} onOpenChange={(open) => !open && handleResume()}>
+        <DialogContent className="w-[calc(100%-2rem)] max-w-[520px] overflow-hidden data-[state=open]:animate-none data-[state=closed]:animate-none sm:w-full">
+          <motion.div
+            initial={{ opacity: 0, y: 12, scale: 0.985 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.28, ease: [0.22, 0.61, 0.36, 1] }}
+          >
+            <DialogHeader className="text-center">
+              <DialogTitle className="text-center">Session paused</DialogTitle>
+              <DialogDescription>Take a breath, then jump back in.</DialogDescription>
+            </DialogHeader>
+            <div className="mt-6 flex flex-col gap-3 px-2 sm:flex-row sm:justify-center sm:px-0">
+              <Button variant="primary" onClick={handleResume} className="w-full sm:w-auto">
+                Resume
+              </Button>
+              <Button
+                variant="secondary"
+                onClick={handleRestart}
+                className="w-full bg-[var(--bg-elevated)] text-[var(--text-primary)] hover:bg-[var(--bg-surface)] sm:w-auto"
+              >
+                Restart
+              </Button>
+              <Button
+                variant="ghost"
+                className="w-full lg:hidden sm:w-auto"
+                onClick={() => {
+                  setIsPauseOpen(false)
+                  setIsSidebarOpen(true)
+                }}
+              >
+                View stats
+              </Button>
+            </div>
+          </motion.div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isFinished} onOpenChange={(open) => !open && setIsFinished(false)}>
+        <DialogContent className="overflow-hidden">
+          {scorePercent >= 80 && (
+            <div className="pointer-events-none absolute inset-0">
+              {[...Array(8)].map((_, idx) => (
+                <span
+                  key={idx}
+                  className="confetti-dot"
+                  style={{
+                    left: `${10 + idx * 10}%`,
+                    top: "70%",
+                    background: idx % 2 === 0 ? "var(--accent)" : "var(--correct)",
+                    animationDelay: `${idx * 60}ms`,
+                  }}
+                />
+              ))}
+            </div>
+          )}
+          <DialogHeader className="text-center">
+            <DialogTitle className="text-center">Session complete</DialogTitle>
+            <DialogDescription>Your focus paid off.</DialogDescription>
+          </DialogHeader>
+          <div className="mt-6 text-center">
+            <p className="font-display text-[3rem] font-semibold" style={{ color: scoreColor }}>
+              {scorePercent}%
+            </p>
+            <p className="text-sm-body text-[var(--text-secondary)]">
+              {currentScore} correct out of {questions.length}
+            </p>
+          </div>
+          <DialogFooter className="mt-8">
+            <Button variant="primary" asChild>
+              <Link href="/categories">Back to Categories</Link>
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
