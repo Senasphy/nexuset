@@ -6,7 +6,7 @@ import ComingSoon from "./components/ComingSoon"
 import AboutSection from "./components/AboutSection"
 import Footer from "./components/Footer"
 
-export default function LandingPage() {
+export default function HomePage() {
   return (
     <div id="top" className="bg-[var(--bg-base)] text-[var(--text-primary)]">
       <Navbar />

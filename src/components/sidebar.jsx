@@ -56,18 +56,18 @@ function Sidebar() {
     try {
       await logout()
       setIsSidebarOpen(false)
-      router.push('/landing')
+      router.push('/')
     } catch (err) {
       console.error('Sign out failed', err)
     }
   }
 
   const SidebarContent = () => (
-    <div className="flex h-full  flex-col bg-[var(--bg-surface)] px-5 py-6">
-      <div className="space-y-6">
-        <div className="space-y-3">
+    <div className="flex h-full   flex-col bg-[var(--bg-surface)] px-5 py-6">
+      <div className="space-y-6  ">
+        <div className="space-y-3  ">
           <p className="text-xs-label text-[var(--text-muted)]">Preferences</p>
-          <div className="flex h-11 items-center justify-between rounded-[8px] px-2 transition-colors hover:bg-[var(--bg-elevated)]">
+          <div className="flex h-11 items-center gap-12 justify-between rounded-[8px] px-2 transition-colors hover:bg-[var(--bg-elevated)]">
             <span className="text-base-body text-[var(--text-primary)]">Appearance</span>
             <button
               type="button"
@@ -141,7 +141,7 @@ function Sidebar() {
 
   return (
     <>
-      <div className="sticky top-24 hidden w-[min(320px,30vw)] min-w-[240px] max-w-[360px] min-h-[calc((100vh-64px)*0.9)] max-h-[calc((100vh-64px)*0.9)] self-start overflow-hidden rounded-[12px] border border-[var(--border)] bg-[var(--bg-surface)] lg:flex">
+      <div className="sticky top-24 hidden px-4 min-h-[calc((100vh-64px)*0.9)] max-h-[calc((100vh-64px)*0.9)] self-start overflow-hidden rounded-[12px] border border-[var(--border)] bg-[var(--bg-surface)] lg:flex">
         <SidebarContent />
       </div>
 
