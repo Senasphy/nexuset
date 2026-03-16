@@ -22,7 +22,9 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     if (!auth) {
-      console.error('Auth is undefined in AuthContext');
+      console.warn('Auth is disabled or missing configuration. Using mock guest user.');
+      setUser({ uid: 'guest', email: 'guest@example.com' });
+      setUsername('Guest');
       setLoading(false);
       return;
     }
@@ -57,6 +59,10 @@ export function AuthProvider({ children }) {
   }, []);
 
   const signUp = async (email, password, username) => {
+    if (!auth) {
+      console.warn("Auth is disabled. Sign up not possible.");
+      return;
+    }
     if (!email || !password || !username){
       throw new Error('Email, password, or username is missing');
     }
@@ -90,10 +96,13 @@ export function AuthProvider({ children }) {
 
   const logout = async () => {
     if(!auth) {
-      throw new Error('Auth service is not initialized');
+      setUser(null);
+      setUsername(null);
+      return;
     }
     try{
     document.cookie = '__session=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;'
+    document.cookie = 'session=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;'
       await signOut(auth);
       setUser(null)
       setUsername(null)
@@ -103,6 +112,10 @@ export function AuthProvider({ children }) {
     }
     }
   const login = async (email, password) => {
+    if (!auth) {
+      console.warn("Auth is disabled. Login not possible.");
+      return;
+    }
    // Inside login function, after signInWithEmailAndPassword
     const userCredentials = await signInWithEmailAndPassword(auth, email, password);
     const user = userCredentials.user;  
@@ -121,10 +134,46 @@ export function AuthProvider({ children }) {
   }
 
   const signInWithGoogle = async () => {
+    if (!auth) {
+      console.warn("Auth is disabled. Google sign-in not possible.");
+      return;
+    }
     const provider = new GoogleAuthProvider();
     try{
       const result = await signInWithPopup(auth, provider)
-      return result.user
+      const googleUser = result.user
+      setUser(googleUser)
+
+      const displayName = googleUser.displayName || null
+      const photoURL = googleUser.photoURL || null
+      const fallbackUsername = googleUser.email?.split('@')[0] || null
+
+      const userRef = doc(db, 'users', googleUser.uid)
+      const userSnapshot = await getDoc(userRef)
+
+      if (!userSnapshot.exists()) {
+        const newUsername = displayName || fallbackUsername || `user-${googleUser.uid.slice(0, 6)}`
+        await setDoc(userRef, {
+          email: googleUser.email || null,
+          username: newUsername,
+          photoURL,
+          createdAt: new Date().toISOString(),
+        })
+        await setDoc(doc(db, 'usernames', newUsername), { uid: googleUser.uid })
+        setUsername(newUsername)
+      } else {
+        const existingData = userSnapshot.data()
+        if (existingData?.username) {
+          setUsername(existingData.username)
+        } else if (displayName || fallbackUsername) {
+          setUsername(displayName || fallbackUsername)
+        }
+        if (photoURL && existingData?.photoURL !== photoURL) {
+          await setDoc(userRef, { photoURL }, { merge: true })
+        }
+      }
+
+      return googleUser
     }catch(error){
       console.error("Google sign-in error", error)
       throw error

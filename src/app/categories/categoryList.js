@@ -2,6 +2,7 @@
 const categories = [{
     name : "General",
     description: "Spell words from every field!", 
+    wordCount: 120,
     highScore: 45,
     rating: 4.7,
     icon: "replace icon",
@@ -12,6 +13,7 @@ const categories = [{
 {
     name : "Math",
     description: "Master math spellings!",
+    wordCount: 80,
     highScore: 48,
     rating: 4.8,
     icon: "replace with icon",
@@ -23,6 +25,7 @@ const categories = [{
 {
     name : "Science",
     description: "Nail science word spellings!",
+    wordCount: 90,
     highScore: 48,
     rating: 4.8,
     icon: "replace with icon",
@@ -33,6 +36,7 @@ const categories = [{
 {
     name : "English",
     description: "Perfect your word spelling!",
+    wordCount: 110,
     highScore: 48,
     rating: 4.8,
     icon: "replace with icon",
@@ -43,6 +47,7 @@ const categories = [{
 {
     name : "Geography",
     description: "Spell global places right!",
+    wordCount: 70,
     highScore: 48,
     rating: 4.8,
     icon: "replace with icon",

@@ -53,48 +53,49 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="w-screen h-screen flex overflow-hidden bg-white dark:bg-[#0a0f1e]">
-      {/* Image - hidden on mobile */}
-      <div className="hidden md:block md:w-1/2 h-full">
-        <img
-          src="/girlbg.jpg"
-          alt="Background"
-          className="h-full w-full object-cover"
-        />
+    <div className="relative min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)]">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute left-10 top-10 h-40 w-40 rounded-full bg-[var(--landing-amber)] opacity-[0.08] blur-2xl" />
+        <div className="absolute bottom-10 right-10 h-52 w-52 rounded-full bg-[var(--landing-amber)] opacity-[0.06] blur-3xl" />
       </div>
 
-      {/* Form */}
-      <div className="w-full md:w-1/2 flex items-center justify-center bg-white dark:bg-[#0a0f1e] overflow-y-auto">
-        <div className="w-full max-w-md px-8 py-12">
-          <div className="text-center mb-10">
-            <h1 className="text-3xl font-semibold text-gray-900 dark:text-white tracking-tight">
-              Log In
+      <div className="relative mx-auto flex min-h-screen w-full max-w-5xl items-center justify-center px-6 py-16">
+        <div className="w-full max-w-md rounded-[20px] border border-[var(--border)] bg-[var(--bg-surface)] px-8 py-10 shadow-[0_24px_60px_rgba(26,25,23,0.12)]">
+          <div className="space-y-2 text-center">
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--text-muted)]">
+              Welcome back
+            </p>
+            <h1 className="font-display text-3xl font-semibold text-[var(--landing-ink)]">
+              Log in to continue
             </h1>
+            <p className="text-sm text-[var(--text-secondary)]">
+              Pick up where you left off in your spelling journey.
+            </p>
           </div>
 
-          <form className="space-y-5" onSubmit={handleSubmit}>
+          <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
             {error && (
-              <p className="text-red-600 dark:text-red-400 text-sm text-center bg-red-50 dark:bg-red-900/20 py-2 rounded border dark:border-red-900/50">
+              <p className="rounded-[12px] border border-[var(--wrong-border)] bg-[var(--wrong-bg)] px-4 py-2 text-center text-sm text-[var(--wrong)]">
                 {error}
               </p>
             )}
 
             <div>
-              <label htmlFor="email" className="block text-sm font-bold text-gray-700 dark:text-slate-400 mb-1">
+              <label htmlFor="email" className="block text-sm font-medium text-[var(--text-secondary)]">
                 Email
               </label>
               <input
                 type="email"
                 id="email"
                 name="email"
-                placeholder="Enter your email"
+                placeholder="you@example.com"
                 required
-                className="block w-full px-4 py-2 bg-white dark:bg-[#161b2c] border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className="mt-2 block w-full rounded-[12px] border border-[var(--border)] bg-[var(--bg-base)] px-4 py-3 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--landing-amber)] focus:outline-none focus:ring-2 focus:ring-[var(--landing-amber)]/20"
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-bold text-gray-700 dark:text-slate-400 mb-1">
+              <label htmlFor="password" className="block text-sm font-medium text-[var(--text-secondary)]">
                 Password
               </label>
               <input
@@ -103,43 +104,59 @@ export default function LoginPage() {
                 name="password"
                 placeholder="Enter your password"
                 required
-                className="block w-full px-4 py-2 bg-white dark:bg-[#161b2c] border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className="mt-2 block w-full rounded-[12px] border border-[var(--border)] bg-[var(--bg-base)] px-4 py-3 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--landing-amber)] focus:outline-none focus:ring-2 focus:ring-[var(--landing-amber)]/20"
               />
-              <p className="mt-1.5 text-xs text-gray-500 dark:text-slate-600 italic">
-                Minimum 8 characters
-              </p>
+              <p className="mt-2 text-xs text-[var(--text-muted)]">Minimum 8 characters.</p>
             </div>
 
             <button
               type="submit"
               disabled={isLoading}
-              className={`w-full py-3 mt-2 bg-blue-600 text-white font-medium rounded-lg transition-colors
-                ${isLoading ? 'opacity-60 cursor-not-allowed' : 'hover:bg-blue-700'}`}
+              className={`w-full rounded-[12px] bg-[var(--landing-amber)] py-3 text-sm font-semibold text-white transition-all hover:-translate-y-[1px] hover:shadow-[0_12px_24px_rgba(217,119,87,0.25)] ${
+                isLoading ? "cursor-not-allowed opacity-70" : ""
+              }`}
             >
-              {isLoading ? 'Logging in...' : 'Log In'}
+              {isLoading ? "Logging in..." : "Log In"}
             </button>
           </form>
 
-          <div className="mt-8 flex items-center justify-between">
-            <span className="w-1/4 border-b border-gray-300 dark:border-white/5"></span>
-            <span className="text-md text-gray-400 dark:text-slate-600   font-bold">or continue with</span>
-            <span className="w-1/4 border-b border-gray-300 dark:border-white/5"></span>
+          <div className="mt-8 flex items-center gap-4">
+            <span className="h-px flex-1 bg-[var(--border)]" />
+            <span className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--text-muted)]">
+              or
+            </span>
+            <span className="h-px flex-1 bg-[var(--border)]" />
           </div>
 
-          <div className="mt-6 flex gap-4">
-            <button 
-              onClick={handleGoogleSignIn}
-              className="w-full py-3 border border-gray-300 dark:border-white/10 rounded-lg font-medium flex items-center justify-center gap-3 bg-white dark:bg-[#161b2c] hover:bg-gray-50 dark:hover:bg-white/5 text-gray-700 dark:text-white transition"
-            >
-              <img src="https://www.google.com/favicon.ico" alt="Google" className="w-5 h-5" />
-              <span>Google</span>
-            </button>
-          </div>
+          <button
+            onClick={handleGoogleSignIn}
+            className="mt-6 flex w-full items-center justify-center gap-3 rounded-[12px] border border-[var(--border)] bg-[var(--bg-base)] py-3 text-sm font-semibold text-[var(--text-primary)] transition hover:border-[var(--border-strong)] hover:bg-[var(--bg-elevated)]"
+          >
+            <svg className="h-5 w-5" viewBox="0 0 48 48" aria-hidden>
+              <path
+                fill="#FFC107"
+                d="M43.6 20.5H42V20H24v8h11.3C33.9 32.7 29.4 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.1 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.2-.4-3.5z"
+              />
+              <path
+                fill="#FF3D00"
+                d="M6.3 14.7l6.6 4.8C14.7 15.2 19 12 24 12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.1 6.1 29.3 4 24 4c-7.7 0-14.3 4.3-17.7 10.7z"
+              />
+              <path
+                fill="#4CAF50"
+                d="M24 44c5.3 0 10.1-2 13.8-5.3l-6.4-5.2C29.4 36 26.8 37 24 37c-5.3 0-9.8-3.3-11.5-7.9l-6.6 5.1C9.2 39.7 16.2 44 24 44z"
+              />
+              <path
+                fill="#1976D2"
+                d="M43.6 20.5H42V20H24v8h11.3c-1 3-3.1 5.4-5.9 6.9l.1.1 6.4 5.2C35.3 40.4 44 36 44 24c0-1.3-.1-2.2-.4-3.5z"
+              />
+            </svg>
+            Sign in with Google
+          </button>
 
-          <p className="mt-10 text-center text-md text-gray-600 dark:text-slate-500">
-            Don't have an account?{' '}
-            <Link href="/sign-up" className="text-blue-600 dark:text-blue-400 font-semibold hover:underline">
-              Sign Up
+          <p className="mt-8 text-center text-sm text-[var(--text-secondary)]">
+            Don't have an account?{" "}
+            <Link href="/sign-up" className="font-semibold text-[var(--landing-amber)] hover:underline">
+              Create one
             </Link>
           </p>
         </div>

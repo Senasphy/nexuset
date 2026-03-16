@@ -5,36 +5,29 @@ import { cva } from "class-variance-authority";
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[8px] font-sans text-[1rem] font-medium transition-[transform,box-shadow,background-color,color,border-color] duration-150 ease focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground shadow hover:bg-primary/90",
-        destructive:
-          "bg-[#FF7799] text-destructive-foreground shadow-md hover:bg-[#EE99A1] transition duration-300 ",
-        outline:
-          "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
+          "bg-[var(--accent)] text-white px-5 py-2.5 hover:brightness-[1.08] hover:-translate-y-[1px] hover:shadow-[0_4px_12px_rgba(217,119,6,0.3)] active:translate-y-0 active:scale-[0.97]",
+        primary:
+          "bg-[var(--accent)] text-white px-5 py-2.5 hover:brightness-[1.08] hover:-translate-y-[1px] hover:shadow-[0_4px_12px_rgba(217,119,6,0.3)] active:translate-y-0 active:scale-[0.97]",
         secondary:
-          "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
-        custom:
-        "bg-[#D8D8FF] hover:opacity-75 shadow-sm transition duration-300 transform ",
-        correct:
-        "bg-[#C0F1DC] hover:opacity-75 shadow-sm",
-        scroll:
-        "bg-[#F3EBE4] rounded-full capitalize py-2 px-4 text-sm  transition-transform hover:opacity-75 hover:scale-105",
-        rounded:
-        "bg-card text-black dark:bg-card dark:text-white w-full min-h-[3rem] rounded-full text-center hover:bg-primary/90   text-xl mb-2 flex items-center justify-center",
-
+          "border border-[var(--border)] bg-transparent text-[var(--text-secondary)] px-5 py-2.5 hover:bg-[var(--bg-elevated)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)]",
+        outline:
+          "border border-[var(--border)] bg-transparent text-[var(--text-secondary)] px-5 py-2.5 hover:bg-[var(--bg-elevated)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)]",
+        ghost:
+          "rounded-[6px] bg-transparent px-3 py-2 text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)]",
+        danger:
+          "border border-[var(--border)] bg-transparent text-[var(--text-secondary)] px-5 py-2.5 hover:bg-[var(--bg-elevated)] hover:border-[var(--wrong-border)] hover:text-[var(--wrong)]",
+        link: "text-[var(--text-primary)] underline-offset-4 hover:underline",
       },
-
       size: {
-        default: "h-9 px-4 py-2",
-        sm: "h-8 rounded-md px-3 text-xs",
-        lg: "h-10 rounded-md px-8",
-        icon: "h-9 w-9",
+        default: "h-auto",
+        sm: "h-8 px-3 text-[0.875rem]",
+        lg: "h-11 px-6 text-[1rem]",
+        icon: "h-9 w-9 p-0",
       },
     },
     defaultVariants: {

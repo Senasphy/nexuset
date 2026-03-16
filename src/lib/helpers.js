@@ -17,6 +17,7 @@ import { db } from '@/lib/firebase'
   }
 
 export async function addNewDocument(){
+  if (!db) return;
   try{
   const docRef = doc(collection(db, 'users', user.uid))
   const colRef = collection(docRef, 'usage-data', user.uid)
@@ -45,6 +46,7 @@ export function handleAnswer(data, item, optionIndex, index) {
 
 
 export async function updateScore(updateObject, user) {
+  if (!db) return;
   if(user){
     try {
       const docRef = doc(db, 'users', user.uid);
@@ -67,6 +69,7 @@ export async function updateScore(updateObject, user) {
 
 
 export async function queryByTime(user, time){
+  if (!db) return;
   const rangeObject = getTimeRange(time)
   try{
       const docRef = doc(db, 'users', user.uid);
@@ -118,6 +121,7 @@ export function getTimeRange(time){
 }
 
 export async function filterByCategory(user, category){
+  if (!db) return;
   const userDoc = doc(db, 'users', user.uid)
   const sessionRef  = collection(userDoc, 'sessions') 
   const q = query(sessionRef, where('category', '==',category))
@@ -143,7 +147,7 @@ export async function filterByCategory(user, category){
   */
 
 export async function getTime(user, categories ){
-    
+    if (!db) return;
     let userData = {}
     let snapshot;
     for (let i = 0; i < categories.length; i++){
