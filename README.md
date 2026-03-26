@@ -13,17 +13,17 @@ nexuset is a focused spelling practice app for students. It is built to feel cal
 
 Support for multiple categories to help with diverse subjects and interests
 
-![Categories](public/general.jpg)
+![Categories](public/categories.png)
 
 Questions with timers and guided pacing
 
-![Timed Questions](public/lightDot.jpg)
+![Timed Questions](public/questions.png)
 
 Light and dark mode experiences
 
-![Light Mode](public/backgroundCalm.jpg)
+![Light Mode](public/light.png)
 
-![Dark Mode](public/darkBg.jpg)
+![Dark Mode](public/dark.png)
 
 ## How It Is Used
 
