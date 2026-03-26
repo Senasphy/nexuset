@@ -1,36 +1,42 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# nexuset
 
-## Getting Started
+nexuset is a focused spelling practice app for students. It is built to feel calm and structured while still making progress visible. The flow starts with a meaning, then asks the learner to build the word one letter at a time. That small shift makes spelling feel like a game of recall instead of a chore.
 
-First, run the development server:
+## What It Does
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Definition first spelling to build recall
+- Support for multiple categories to help with diverse subjects and interests
+- Timed sessions for focus and pacing
+- Light and dark themes for different study settings
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Visual Notes
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+Support for multiple categories to help with diverse subjects and interests
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+![Categories](public/general.jpg)
 
-## Learn More
+Questions with timers and guided pacing
 
-To learn more about Next.js, take a look at the following resources:
+![Timed Questions](public/lightDot.jpg)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Light and dark mode experiences
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+![Light Mode](public/backgroundCalm.jpg)
 
-## Deploy on Vercel
+![Dark Mode](public/darkBg.jpg)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## How It Is Used
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Choose a category like English, Science, or Geography.
+2. Read a definition and build the word one letter at a time.
+3. Use the timer if you want a faster pace, or turn it off for a calm session.
+4. Check progress with session stats and completion feedback.
+
+## Project Structure
+
+- `src/app` App Router pages and UI
+- `src/app/components` Landing page sections
+- `src/components` Shared UI building blocks
+- `src/context` Providers
+- `src/lib` Data and service helpers
+- `src/stores` Zustand stores
