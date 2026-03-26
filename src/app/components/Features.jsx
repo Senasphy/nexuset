@@ -63,7 +63,7 @@ const cardVariants = {
 
 export default function Features() {
   return (
-    <section id="features" className="bg-[var(--landing-hero-bg)] py-20">
+    <section id="features" className="bg-[var(--landing-section-alt)] py-20">
       <div className="mx-auto max-w-6xl px-6">
         <h2 className="max-w-2xl font-display text-[clamp(2.4rem,4vw,3.6rem)] font-light leading-tight text-[var(--landing-ink)]">
           Everything you need to <span className="font-semibold italic">{SECTION_EMPHASIS}</span> learn

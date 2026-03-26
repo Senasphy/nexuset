@@ -8,7 +8,7 @@ import Footer from "./components/Footer"
 
 export default function HomePage() {
   return (
-    <div id="top" className="bg-[var(--bg-base)] text-[var(--text-primary)]">
+    <div id="top" className="bg-[var(--landing-section-alt)] text-[var(--text-primary)]">
       <Navbar />
       <main>
         <Hero />

@@ -1,11 +1,11 @@
 import { AuthProvider } from "../context/AuthContext";
 import { ThemeProvider } from 'next-themes'
-import QueryProvider from '../lib/queryClient'
+import QueryProvider from '../lib/query-client'
 import "./globals.css";
 import { Fraunces, DM_Sans, DM_Mono } from 'next/font/google'
 
 export const metadata = {
-  title: "Next Spelling",
+  title: "nexuset",
   description: "A spelling practising app made for kids",
   icons: {
     icon: '/icon.svg'

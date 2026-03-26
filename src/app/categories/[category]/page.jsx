@@ -2,8 +2,7 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import useQuestions from '@/lib/api'
-import QuestionComponent from "@/app/categories/question-component.jsx"
-import { Loader } from 'lucide-react'
+import QuestionComponent from "@/app/categories/QuestionComponent"
 import useQuizStore from '@/stores/quizStore'
 
 export default function QuestionsPage() {

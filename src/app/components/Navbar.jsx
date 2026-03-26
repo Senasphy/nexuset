@@ -6,8 +6,8 @@ import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion"
 import { Menu, X } from "lucide-react"
 import ThemeToggle from "./ThemeToggle"
 
-const LOGO_PREFIX = "next"
-const LOGO_SUFFIX = "spelling"
+const LOGO_PREFIX = "nexus"
+const LOGO_SUFFIX = "et"
 const CTA_LABEL = "Start free →"
 
 const NAV_LINKS = [

@@ -57,8 +57,7 @@ function Sidebar() {
       await logout()
       setIsSidebarOpen(false)
       router.push('/')
-    } catch (err) {
-      console.error('Sign out failed', err)
+    } catch {
     }
   }
 
@@ -134,7 +133,7 @@ function Sidebar() {
         >
           Sign out
         </button>
-        <p className="mt-6 text-center text-xs text-[var(--text-muted)]">Next Spelling • v1.0</p>
+        <p className="mt-6 text-center text-xs text-[var(--text-muted)]">nexuset • v1.0</p>
       </div>
     </div>
   )

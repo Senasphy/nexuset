@@ -1,11 +1,11 @@
 "use client"
 import { useAuth } from '@/context/AuthContext'
-import Sidebar from '@/components/sidebar'
+import Sidebar from '@/components/Sidebar'
 import { Menu, Moon, Sun } from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
 import useQuizStore from '@/stores/quizStore'
-import categories from './categoryList'
-import CategoryCard from '@/components/category-card'
+import categories from './category-list'
+import CategoryCard from '@/components/CategoryCard'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useTheme } from 'next-themes'
 import Link from "next/link"
@@ -51,9 +51,9 @@ const CategoryPage = () => {
         <div className="mx-auto flex h-full max-w-6xl items-center justify-between px-6">
           <div className="flex items-center gap-3">
         <Link href="/" className="flex items-center text-[1.25rem] leading-none">
-          <span className="font-mono font-medium text-[var(--landing-amber)]">next</span>
+          <span className="font-mono font-medium text-[var(--landing-amber)]">nexus</span>
           <span className="font-display font-semibold italic text-[var(--landing-ink)]">
-            spelling
+            et
           </span>
         </Link>
           </div>

@@ -1,31 +1,28 @@
 import { NextResponse } from 'next/server'
 
-const publicRoutes = ['/login', '/sign-up']
+const PUBLIC_ROUTES = ['/', '/login', '/sign-up']
+const AUTH_REQUIRED_PREFIXES = ['/categories', '/dashboard', '/stats']
 
-export function proxy(request){
-  // Bypassing all authentication redirects
-  return NextResponse.next()
+export function proxy(request) {
+  const { pathname } = request.nextUrl
+  const hasSession = Boolean(
+    request.cookies.get('__session')?.value || request.cookies.get('session')?.value
+  )
 
-  /*
-  const session = request.cookies.get('session')?.value
+  const isPublicRoute = PUBLIC_ROUTES.includes(pathname)
+  const needsAuth = AUTH_REQUIRED_PREFIXES.some((prefix) => pathname.startsWith(prefix))
 
-  // If trying to access categories without a session, redirect to login
-  if (!session && request.nextUrl.pathname.startsWith('/categories')) {
+  if (needsAuth && !hasSession) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 
-  // If user IS logged in, don't let them go to the login page
-  if (session && request.nextUrl.pathname === '/login') {
+  if (hasSession && (pathname === '/login' || pathname === '/sign-up')) {
     return NextResponse.redirect(new URL('/categories', request.url))
   }
 
   return NextResponse.next()
-  */
 }
 
-
-//Matcher: This ensures middleware doesn't run on static files/images
 export const config = {
-
- matcher: ['/((?!api|_next/static|_next/image|favicon.ico|.*\\..*).*)'],
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico|.*\\..*).*)'],
 }

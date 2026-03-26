@@ -67,10 +67,6 @@ export default function SignupPage() {
 
   return (
     <div className="relative min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)]">
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-12 top-12 h-40 w-40 rounded-full bg-[var(--landing-amber)] opacity-[0.08] blur-2xl" />
-        <div className="absolute bottom-12 right-12 h-56 w-56 rounded-full bg-[var(--landing-amber)] opacity-[0.06] blur-3xl" />
-      </div>
 
       <div className="relative mx-auto flex min-h-screen w-full max-w-5xl items-center justify-center px-6 py-16">
         <div className="w-full max-w-md rounded-[20px] border border-[var(--border)] bg-[var(--bg-surface)] px-8 py-10 shadow-[0_24px_60px_rgba(26,25,23,0.12)]">
@@ -139,7 +135,7 @@ export default function SignupPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className={`w-full rounded-[12px] bg-[var(--landing-amber)] py-3 text-sm font-semibold text-white transition-all hover:-translate-y-[1px] hover:shadow-[0_12px_24px_rgba(217,119,87,0.25)] ${
+              className={`w-full rounded-[12px] bg-[var(--landing-amber)] py-3 text-sm font-semibold text-white transition-all  hover:shadow-[0_12px_24px_rgba(217,119,87,0.25)] ${
                 isLoading ? "cursor-not-allowed opacity-70" : ""
               }`}
             >

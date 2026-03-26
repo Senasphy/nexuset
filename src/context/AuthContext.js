@@ -22,14 +22,12 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     if (!auth) {
-      console.warn('Auth is disabled or missing configuration. Using mock guest user.');
       setUser({ uid: 'guest', email: 'guest@example.com' });
       setUsername('Guest');
       setLoading(false);
       return;
     }
     if (typeof onAuthStateChanged !== 'function') {
-      console.error('onAuthStateChanged is not a function:', onAuthStateChanged);
       setLoading(false);
       return;
     }
@@ -46,7 +44,6 @@ export function AuthProvider({ children }) {
             }
           }
           catch(err){
-            console.error('Error fetching user document:', err);
             setUsername(null);
           }
       } else {
@@ -60,7 +57,6 @@ export function AuthProvider({ children }) {
 
   const signUp = async (email, password, username) => {
     if (!auth) {
-      console.warn("Auth is disabled. Sign up not possible.");
       return;
     }
     if (!email || !password || !username){
@@ -86,7 +82,6 @@ export function AuthProvider({ children }) {
       setUsername(username)
     }
     catch(err){
-      console.error('Error storing user data:', err);
       throw new Error('Error storing user data');
     }
 
@@ -107,16 +102,13 @@ export function AuthProvider({ children }) {
       setUser(null)
       setUsername(null)
     }catch(err){
-      console.error('Error signing out:', err);
       throw new Error('Error signing out'); 
     }
     }
   const login = async (email, password) => {
     if (!auth) {
-      console.warn("Auth is disabled. Login not possible.");
       return;
     }
-   // Inside login function, after signInWithEmailAndPassword
     const userCredentials = await signInWithEmailAndPassword(auth, email, password);
     const user = userCredentials.user;  
     const idToken = await user.getIdToken()
@@ -135,7 +127,6 @@ export function AuthProvider({ children }) {
 
   const signInWithGoogle = async () => {
     if (!auth) {
-      console.warn("Auth is disabled. Google sign-in not possible.");
       return;
     }
     const provider = new GoogleAuthProvider();
@@ -175,7 +166,6 @@ export function AuthProvider({ children }) {
 
       return googleUser
     }catch(error){
-      console.error("Google sign-in error", error)
       throw error
     }
 

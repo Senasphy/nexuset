@@ -21,11 +21,8 @@
         const app = initializeApp(firebaseConfig);
         auth = getAuth(app);
         db = getFirestore(app);
-      } catch (error) {
-        console.error("Firebase initialization failed:", error);
+      } catch {
       }
-    } else {
-      console.warn("Firebase API key missing. Authentication features will be disabled.");
     }
   
     export { db, auth };   

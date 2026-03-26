@@ -6,7 +6,7 @@ import Link from "next/link"
 const HERO_EYEBROW = "Spelling that feels like play"
 const HERO_HEADLINE = ["Learn every", "word like a", "champion."]
 const HERO_SUBHEAD =
-  "NextSpelling shows the meaning first, then asks kids to build the word one letter at a time. It feels like a small challenge, not a chore, and the progress adds up."
+  "nexuset shows the meaning first, then asks kids to build the word one letter at a time. It feels like a small challenge, not a chore, and the progress adds up."
 const CTA_PRIMARY = "Create an account"
 const CTA_SECONDARY = "Login"
 
@@ -41,7 +41,7 @@ const circleShapes = [
 
 export default function Hero() {
   return (
-    <section className="relative flex min-h-[100dvh] items-center overflow-hidden bg-[var(--landing-hero-bg)]">
+    <section className="relative flex min-h-[100dvh] items-center overflow-hidden bg-[var(--landing-section-alt)]">
       <div className="relative mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-12 px-6 pb-16 lg:grid-cols-[1.1fr_0.9fr]">
         <div className="relative z-10 flex flex-col gap-6">
           <motion.div

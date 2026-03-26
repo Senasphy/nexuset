@@ -8,7 +8,6 @@ const DEVELOPER_NAME = "SENA ABEBE"
 const DEVELOPER_TITLE = "Full stack developer and educator"
 
 const SOCIAL_LINKS = {
-  // TODO: replace with your portfolio URL
   portfolio: "https://sena-works.vercel.app",
   telegram: "https://t.me/SM10AR",
   linkedin: "https://www.linkedin.com/in/sena-abebe-430460289",
@@ -40,7 +39,7 @@ const itemVariants = {
 
 export default function AboutSection() {
   return (
-    <section id="about" className="bg-[var(--landing-hero-bg)] py-20">
+    <section id="about" className="bg-[var(--landing-section-alt)] py-20">
       <div className="mx-auto grid max-w-6xl grid-cols-1 gap-12 px-6 lg:grid-cols-[1.1fr_0.9fr]">
         <div className="flex flex-col gap-6">
           <span className="text-xs font-medium uppercase tracking-[0.2em] text-[var(--landing-amber)]">
@@ -57,7 +56,7 @@ export default function AboutSection() {
 
             <p>
             Most spelling tools are either flat flashcards or noisy games. I wanted something in the middle that feels focused, calm, and rewarding. It should respect a child's attention and still feel fun.
-            NextSpelling started as a weekend project and kept growing. I am proud of what it has become, and I am still making it better.
+            nexuset started as a weekend project and kept growing. I am proud of what it has become, and I am still making it better.
             </p>
           </div>
         </div>
