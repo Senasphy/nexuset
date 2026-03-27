@@ -35,8 +35,6 @@ Light and dark mode experiences
 ## Project Structure
 
 - `src/app` App Router pages and UI
-- `src/app/components` Landing page sections
-- `src/components` Shared UI building blocks
 - `src/context` Providers
 - `src/lib` Data and service helpers
 - `src/stores` Zustand stores
