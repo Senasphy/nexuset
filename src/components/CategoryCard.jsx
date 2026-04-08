@@ -1,7 +1,6 @@
 "use client"
 import Link from 'next/link'
 import { BookOpen, Sigma, FlaskConical, PenLine, Globe2 } from 'lucide-react'
-import { Badge } from '@/components/ui/badge'
 
 const CategoryCard = ({ category }) => {
   const iconMap = {
@@ -16,18 +15,17 @@ const CategoryCard = ({ category }) => {
   return (
     <Link
       href={`/categories/${category.name.toLowerCase()}`}
-      className="group flex h-full min-h-[220px] flex-col justify-between rounded-[12px] border border-[var(--border)] bg-[var(--bg-surface)] px-7 py-8 transition-all duration-200 ease hover:border-[var(--border-strong)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] active:scale-[0.98]"
+      className="group flex h-full flex-col justify-between rounded-[10px] border border-[var(--border)] bg-[var(--bg-surface)] px-4 py-5 transition-all duration-200 ease active:scale-[0.995] sm:min-h-[220px] sm:rounded-[12px] sm:px-7 sm:py-8 sm:hover:border-[var(--border-strong)] sm:hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] sm:active:scale-[0.98]"
     >
-      <div className="flex items-start justify-between">
+      <div className="flex items-start">
         <div className="flex h-12 w-12 items-center justify-center rounded-[12px] bg-[var(--bg-elevated)] text-[var(--text-primary)]">
           <Icon className="h-7 w-7" strokeWidth={1.6} />
         </div>
-        <Badge>{category.wordCount} words</Badge>
       </div>
 
       <div className="mt-6 space-y-3">
-        <h3 className="text-2xl-display text-[var(--text-primary)] transition-all duration-200 group-hover:italic">
-          <span className="relative inline-block after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-0 after:bg-[var(--accent)] after:transition-all after:duration-200 after:ease group-hover:after:w-full group-focus-visible:after:w-full group-active:after:w-full">
+        <h3 className="text-2xl-display text-[var(--text-primary)]">
+          <span className="relative inline-block group-hover:italic group-focus-visible:italic group-active:italic after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-0 after:bg-[var(--accent)] after:transition-[width] after:duration-150 after:ease-out group-hover:after:w-full group-focus-visible:after:w-full group-active:after:w-full">
             {category.name}
           </span>
         </h3>
