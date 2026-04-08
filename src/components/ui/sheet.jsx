@@ -23,7 +23,7 @@ const SheetOverlay = React.forwardRef(({ className, ...props }, ref) => (
 ))
 SheetOverlay.displayName = SheetPrimitive.Overlay.displayName
 
-const SheetContent = React.forwardRef(({ className, side = "left", ...props }, ref) => {
+const SheetContent = React.forwardRef(({ className, side = "left", "aria-describedby": ariaDescribedBy, ...props }, ref) => {
   const initialX = side === "left" ? -280 : 280
   return (
     <SheetPortal>
@@ -31,6 +31,7 @@ const SheetContent = React.forwardRef(({ className, side = "left", ...props }, r
       <SheetPrimitive.Content asChild>
         <motion.div
           ref={ref}
+          aria-describedby={ariaDescribedBy ?? undefined}
           initial={{ x: initialX, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ duration: 0.28, ease: [0.22, 0.61, 0.36, 1] }}

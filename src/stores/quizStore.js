@@ -3,11 +3,16 @@ import { create } from 'zustand'
 const useQuizStore = create((set) =>({
   difficulty: "easy",  
   changeDifficulty: (newDifficulty) => set({difficulty: newDifficulty}),
+  autoPronounce: false,
+  setAutoPronounce: (enabled) => set({ autoPronounce: Boolean(enabled) }),
+  questionCount: 10,
+  setQuestionCount: (count) => set({ questionCount: Number(count) }),
 
   category: "",
   setCategory: (cat) => set({category: cat}),
   
   index: 0,
+  setIndex: (newIndex) => set({ index: newIndex }),
   incrementIndex: () => set((state)=> ({index: state.index + 1})),
   decrementIndex: () => set((state)=>({index:state.index -1})),
   resetIndex : () => set({index: 0}),

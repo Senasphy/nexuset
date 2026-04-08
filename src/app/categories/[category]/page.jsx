@@ -4,22 +4,24 @@ import { useParams } from 'next/navigation'
 import useQuestions from '@/lib/api'
 import QuestionComponent from "@/app/categories/QuestionComponent"
 import useQuizStore from '@/stores/quizStore'
+import ShimmerText from '@/components/kokonutui/shimmer-text'
 
 export default function QuestionsPage() {
     const difficulty = useQuizStore((state) => state.difficulty);
+    const questionCount = useQuizStore((state) => state.questionCount);
     const { category } = useParams()
-    const { data, isLoading, error } = useQuestions(category)
+    const { data, isLoading, error } = useQuestions(category, questionCount, difficulty)
     const [filteredData, setFilteredData] = useState(null)
 
     useEffect(() => {
         if (data) {
-            setFilteredData(data.filter((item) => item.difficulty === difficulty))
+            setFilteredData(data)
         }
-    }, [data, difficulty])
+    }, [data])
 
     if (isLoading) return (
         <div className="min-h-screen flex items-center justify-center bg-[var(--bg-base)] text-base-body text-[var(--text-secondary)]">
-            Loading session...
+            <ShimmerText text="Loading session..." className="text-2xl" />
         </div>
     )
     

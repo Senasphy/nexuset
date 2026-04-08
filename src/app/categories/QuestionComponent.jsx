@@ -2,21 +2,26 @@
 import { useState, useEffect, useRef } from 'react'
 import { useSwipeable } from 'react-swipeable'
 import { motion } from 'framer-motion'
-import { ArrowLeft, Lightbulb, Pause } from 'lucide-react'
+import { ArrowLeft, Lightbulb, Pause, Volume2 } from 'lucide-react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useShallow } from 'zustand/react/shallow'
 import useQuizStore from '@/stores/quizStore'
 import useScoreStore from '@/stores/scoreStore'
+import { useAuth } from '@/context/AuthContext'
 import { Button } from '@/components/ui/button'
 import QuestionSidebar from '@/components/QuestionSidebar'
 import useTimerStore from '@/stores/timerStore'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Progress } from '@/components/ui/progress'
+import { saveUserSession } from '@/lib/sessionAnalytics'
+import ShimmerText from '@/components/kokonutui/shimmer-text'
 
 const QuestionComponent = ({ questions, categoryName }) => {
+  const router = useRouter()
   const {
     index,
-    incrementIndex,
+    setIndex,
     decrementIndex,
     isPaused,
     setIsPaused, // New setter
@@ -24,10 +29,13 @@ const QuestionComponent = ({ questions, categoryName }) => {
     setIsFinished,
     resetIndex,
     setIsSidebarOpen,
+    difficulty,
+    questionCount,
+    autoPronounce,
   } = useQuizStore(
     useShallow((s) => ({
       index: s.index,
-      incrementIndex: s.incrementIndex,
+      setIndex: s.setIndex,
       decrementIndex: s.decrementIndex,
       isPaused: s.isPaused,
       setIsPaused: s.setIsPaused,
@@ -35,8 +43,12 @@ const QuestionComponent = ({ questions, categoryName }) => {
       setIsFinished: s.setIsFinished,
       resetIndex: s.resetIndex,
       setIsSidebarOpen: s.setIsSidebarOpen,
+      difficulty: s.difficulty,
+      questionCount: s.questionCount,
+      autoPronounce: s.autoPronounce,
     }))
   )
+  const { user } = useAuth()
   const { incrementScore, resetScore, currentScore } = useScoreStore(
     useShallow((s) => ({
       incrementScore: s.incrementScore,
@@ -56,7 +68,7 @@ const QuestionComponent = ({ questions, categoryName }) => {
   if (!questions?.length) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[var(--bg-base)] text-base-body text-[var(--text-secondary)]">
-        Loading questions...
+        <ShimmerText text="Loading questions..." className="text-2xl" />
       </div>
     )
   }
@@ -67,6 +79,14 @@ const QuestionComponent = ({ questions, categoryName }) => {
 
   const inputRefs = useRef([])
   const timerRef = useRef(null)
+  const revealCorrectTimeoutRef = useRef(null)
+  const transitionTimeoutRef = useRef(null)
+  const sessionStartAtRef = useRef(Date.now())
+  const totalPausedMsRef = useRef(0)
+  const pauseStartedAtRef = useRef(null)
+  const hasSavedSessionRef = useRef(false)
+  const attemptedIndicesRef = useRef(new Set())
+  const quitPromptWasRunningRef = useRef(false)
   const isTransitioning = useRef(false)
 
   const [userAnswer, setUserAnswer] = useState(new Array(word.length).fill(""))
@@ -74,8 +94,12 @@ const QuestionComponent = ({ questions, categoryName }) => {
   const [isSuccess, setIsSuccess] = useState(false)
   const [secondsLeft, setSecondsLeft] = useState(countdownTime)
   const [isPauseOpen, setIsPauseOpen] = useState(false)
+  const [isQuitPromptOpen, setIsQuitPromptOpen] = useState(false)
   const [revealedIndices, setRevealedIndices] = useState(new Array(word.length).fill(false))
   const [hasUsedHint, setHasUsedHint] = useState(false)
+  const [showCorrectAnswer, setShowCorrectAnswer] = useState(false)
+  const [isSpeaking, setIsSpeaking] = useState(false)
+  const [speechVoice, setSpeechVoice] = useState(null)
 
   // Initialization
   useEffect(() => {
@@ -84,6 +108,11 @@ const QuestionComponent = ({ questions, categoryName }) => {
       setIsFinished(false)
       resetScore()
       setIsPaused(false) // Force unpause on load
+      sessionStartAtRef.current = Date.now()
+      totalPausedMsRef.current = 0
+      pauseStartedAtRef.current = null
+      hasSavedSessionRef.current = false
+      attemptedIndicesRef.current = new Set()
     }, 0)
     
     return () => clearTimeout(init)
@@ -98,8 +127,7 @@ const QuestionComponent = ({ questions, categoryName }) => {
           clearInterval(timerRef.current)
           if (!isPaused && !isFinished) {
             isTransitioning.current = true
-            if (safeIndex < questions.length - 1) incrementIndex()
-            else setIsFinished(true)
+            goToNextQuestion(false)
             setTimeout(() => { isTransitioning.current = false }, 180)
           }
           return 0
@@ -109,6 +137,83 @@ const QuestionComponent = ({ questions, categoryName }) => {
     }, 1000)
   }
 
+  const stopPronunciation = () => {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) return
+    window.speechSynthesis.cancel()
+    setIsSpeaking(false)
+  }
+
+  const goToNextQuestion = (markCurrentAsAttempted = false) => {
+    const total = questions.length
+    if (markCurrentAsAttempted) attemptedIndicesRef.current.add(safeIndex)
+    if (attemptedIndicesRef.current.size >= total) {
+      setIsFinished(true)
+      return
+    }
+
+    for (let offset = 1; offset <= total; offset += 1) {
+      const nextIndex = (safeIndex + offset) % total
+      if (!attemptedIndicesRef.current.has(nextIndex)) {
+        setIndex(nextIndex)
+        return
+      }
+    }
+  }
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) return
+    const synth = window.speechSynthesis
+
+    const pickVoice = () => {
+      const voices = synth.getVoices()
+      if (!voices?.length) return
+      const englishVoice =
+        voices.find((v) => v.lang?.toLowerCase().startsWith("en-us")) ||
+        voices.find((v) => v.lang?.toLowerCase().startsWith("en")) ||
+        voices[0]
+      setSpeechVoice(englishVoice || null)
+    }
+
+    pickVoice()
+    synth.onvoiceschanged = pickVoice
+
+    return () => {
+      synth.onvoiceschanged = null
+    }
+  }, [])
+
+  const handlePronounce = () => {
+    if (
+      !word ||
+      typeof window === "undefined" ||
+      !("speechSynthesis" in window) ||
+      !("SpeechSynthesisUtterance" in window)
+    ) return
+
+    const synth = window.speechSynthesis
+    synth.cancel()
+    synth.resume()
+
+    const utterance = new window.SpeechSynthesisUtterance(currentQuestion?.correctAnswer || word)
+    utterance.lang = "en-US"
+    utterance.rate = 0.9
+    utterance.pitch = 1
+    if (speechVoice) utterance.voice = speechVoice
+    utterance.onend = () => setIsSpeaking(false)
+    utterance.onerror = () => setIsSpeaking(false)
+
+    setIsSpeaking(true)
+    synth.speak(utterance)
+  }
+
+  useEffect(() => {
+    if (!autoPronounce || isPaused || isFinished || !word) return
+    const autoSpeakTimer = setTimeout(() => {
+      handlePronounce()
+    }, 180)
+    return () => clearTimeout(autoSpeakTimer)
+  }, [safeIndex, word, autoPronounce, isPaused, isFinished])
+
   // Question / Timer Logic
   useEffect(() => {
     isTransitioning.current = false
@@ -116,6 +221,8 @@ const QuestionComponent = ({ questions, categoryName }) => {
     setRevealedIndices(new Array(word.length).fill(false))
     setIsError(false)
     setIsSuccess(false)
+    setShowCorrectAnswer(false)
+    stopPronunciation()
     setSecondsLeft(countdownTime)
     setHasUsedHint(false)
 
@@ -127,20 +234,58 @@ const QuestionComponent = ({ questions, categoryName }) => {
 
     return () => {
       clearInterval(timerRef.current)
+      stopPronunciation()
+      if (revealCorrectTimeoutRef.current) clearTimeout(revealCorrectTimeoutRef.current)
+      if (transitionTimeoutRef.current) clearTimeout(transitionTimeoutRef.current)
       clearTimeout(focusTimer)
     }
   }, [safeIndex, word, countdownTime]) // Reset timer on question change
 
   useEffect(() => {
     if (isPaused) {
+      if (!pauseStartedAtRef.current) pauseStartedAtRef.current = Date.now()
       if (timerRef.current) clearInterval(timerRef.current)
       return
+    }
+    if (pauseStartedAtRef.current) {
+      totalPausedMsRef.current += Math.max(0, Date.now() - pauseStartedAtRef.current)
+      pauseStartedAtRef.current = null
     }
     if (!isFinished) startCountdown()
     return () => {
       if (timerRef.current) clearInterval(timerRef.current)
     }
   }, [isPaused, isFinished, safeIndex])
+
+  useEffect(() => {
+    if (!isFinished || hasSavedSessionRef.current) return
+    hasSavedSessionRef.current = true
+
+    const endedAtMs = Date.now()
+    const pausedMs = pauseStartedAtRef.current
+      ? totalPausedMsRef.current + Math.max(0, endedAtMs - pauseStartedAtRef.current)
+      : totalPausedMsRef.current
+    const activeMs = Math.max(0, endedAtMs - sessionStartAtRef.current - pausedMs)
+    const timeSpentSeconds = Math.round(activeMs / 1000)
+    const totalQuestions = questions.length
+    const correctAnswers = Math.min(Math.max(currentScore, 0), totalQuestions)
+    const wrongAnswers = Math.max(0, totalQuestions - correctAnswers)
+    const accuracy = totalQuestions ? Math.min(100, Math.max(0, Math.round((correctAnswers / totalQuestions) * 100))) : 0
+
+    saveUserSession(user?.uid, {
+      category: categoryName,
+      difficulty,
+      plannedQuestions: questionCount,
+      totalQuestions,
+      correctAnswers,
+      wrongAnswers,
+      accuracy,
+      timeSpentSeconds,
+      startedAt: new Date(sessionStartAtRef.current).toISOString(),
+      endedAt: new Date(endedAtMs).toISOString(),
+    }).catch(() => {
+    })
+  }, [isFinished, questions.length, currentScore, categoryName, difficulty, questionCount, user?.uid])
 
   const evaluateAnswer = (answer) => {
     if (answer.some((letter) => !letter)) return
@@ -149,19 +294,24 @@ const QuestionComponent = ({ questions, categoryName }) => {
 
     setIsSuccess(isCorrect)
     setIsError(!isCorrect)
+    setShowCorrectAnswer(false)
 
     clearInterval(timerRef.current)
     isTransitioning.current = true
 
-    if (isCorrect) incrementScore()
+    if (isCorrect) {
+      incrementScore()
+    } else {
+      if (revealCorrectTimeoutRef.current) clearTimeout(revealCorrectTimeoutRef.current)
+      revealCorrectTimeoutRef.current = setTimeout(() => {
+        setShowCorrectAnswer(true)
+      }, 900)
+    }
 
-    setTimeout(() => {
-      if (safeIndex < questions.length - 1) {
-        incrementIndex()
-      } else {
-        setIsFinished(true)
-      }
-    }, 2000)
+    if (transitionTimeoutRef.current) clearTimeout(transitionTimeoutRef.current)
+    transitionTimeoutRef.current = setTimeout(() => {
+      goToNextQuestion(true)
+    }, isCorrect ? 2000 : 3000)
   }
 
   const handleInputChange = (e, i) => {
@@ -232,6 +382,30 @@ const QuestionComponent = ({ questions, categoryName }) => {
     setIsPauseOpen(false)
   }
 
+  const handleBackPress = () => {
+    quitPromptWasRunningRef.current = !isPaused
+    if (quitPromptWasRunningRef.current) {
+      if (timerRef.current) clearInterval(timerRef.current)
+      pauseTimer()
+      setIsPaused(true)
+    }
+    setIsQuitPromptOpen(true)
+  }
+
+  const handleQuitResume = () => {
+    setIsQuitPromptOpen(false)
+    if (quitPromptWasRunningRef.current) {
+      startTimer()
+      setIsPaused(false)
+      quitPromptWasRunningRef.current = false
+    }
+  }
+
+  const handleQuitConfirm = () => {
+    setIsQuitPromptOpen(false)
+    router.push('/categories')
+  }
+
   const handleRestart = () => {
     if (timerRef.current) clearInterval(timerRef.current)
     resetTimer()
@@ -240,12 +414,17 @@ const QuestionComponent = ({ questions, categoryName }) => {
     setSecondsLeft(countdownTime)
     setIsFinished(false)
     setIsPaused(false)
+    sessionStartAtRef.current = Date.now()
+    totalPausedMsRef.current = 0
+    pauseStartedAtRef.current = null
+    hasSavedSessionRef.current = false
+    attemptedIndicesRef.current = new Set()
     startTimer()
     setIsPauseOpen(false)
   }
 
   const handlers = useSwipeable({
-    onSwipedLeft: () => !isTransitioning.current && incrementIndex(),
+    onSwipedLeft: () => !isTransitioning.current && goToNextQuestion(false),
     onSwipedRight: () => !isTransitioning.current && decrementIndex(),
     trackMouse: true,
   })
@@ -271,13 +450,14 @@ const QuestionComponent = ({ questions, categoryName }) => {
       <header className="sticky top-0 z-40 h-16 border-b border-[var(--border)] bg-[var(--bg-base)]">
         <div className="mx-auto flex h-full max-w-6xl items-center justify-between px-6">
           <div className="flex items-center gap-4">
-            <Link
-              href="/categories"
+            <button
+              type="button"
+              onClick={handleBackPress}
               className="flex items-center gap-2 rounded-[8px] border border-[var(--border)] px-3 py-2 text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)]"
             >
               <ArrowLeft className="h-4 w-4" />
               Back
-            </Link>
+            </button>
             <span className="hidden text-xl-ui text-[var(--text-primary)] sm:inline">
               {displayCategory}
             </span>
@@ -315,6 +495,16 @@ const QuestionComponent = ({ questions, categoryName }) => {
             <div className="w-full rounded-[12px] border border-[var(--border)] bg-[var(--bg-surface)] p-6">
               <div className="mb-3 flex items-center justify-between">
                 <span className="text-xs-label text-[var(--text-muted)]">Definition</span>
+                <button
+                  type="button"
+                  onClick={handlePronounce}
+                  disabled={!word}
+                  className="inline-flex h-8 items-center gap-2 rounded-[8px] border border-[var(--border)] px-3 text-xs-label text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-elevated)] disabled:cursor-not-allowed disabled:opacity-50"
+                  aria-label="Pronounce the answer"
+                >
+                  <Volume2 className={`h-3.5 w-3.5 ${isSpeaking ? "text-[var(--accent)]" : ""}`} />
+                  Pronounce
+                </button>
               </div>
               <p className="text-lg-body text-[var(--text-primary)]">
                 {currentQuestion?.definition}
@@ -352,14 +542,19 @@ const QuestionComponent = ({ questions, categoryName }) => {
                 )
               })}
             </ul>
+            {showCorrectAnswer && (
+              <p className="mt-1 text-xs-label text-[var(--text-muted)]">
+                Correct spelling: <span className="font-mono text-[var(--text-secondary)]">{word.toUpperCase()}</span>
+              </p>
+            )}
 
             <div className="flex w-full items-center justify-between">
               <div className="flex items-center gap-2">
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => !isTransitioning.current && incrementIndex()}
-                  disabled={safeIndex === questions.length - 1 || isTransitioning.current}
+                  onClick={() => !isTransitioning.current && goToNextQuestion(false)}
+                  disabled={isTransitioning.current}
                 >
                   Skip
                 </Button>
@@ -418,6 +613,31 @@ const QuestionComponent = ({ questions, categoryName }) => {
                 }}
               >
                 View stats
+              </Button>
+            </div>
+          </motion.div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isQuitPromptOpen} onOpenChange={(open) => !open && handleQuitResume()}>
+        <DialogContent className="w-[calc(100%-2rem)] max-w-[460px] overflow-hidden data-[state=open]:animate-none data-[state=closed]:animate-none sm:w-full">
+          <motion.div
+            initial={{ opacity: 0, y: 12, scale: 0.985 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.24, ease: [0.22, 0.61, 0.36, 1] }}
+          >
+            <DialogHeader className="text-center">
+              <DialogTitle className="text-center">Quit this session?</DialogTitle>
+              <DialogDescription>
+                Are you sure you want to quit? Your current progress for this run will be lost.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="mt-6 flex flex-col gap-3 px-2 sm:flex-row sm:justify-center sm:px-0">
+              <Button variant="primary" onClick={handleQuitResume} className="w-full sm:w-auto">
+                Resume
+              </Button>
+              <Button variant="danger" onClick={handleQuitConfirm} className="w-full sm:w-auto">
+                Quit
               </Button>
             </div>
           </motion.div>
