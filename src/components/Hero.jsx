@@ -3,10 +3,9 @@
 import { motion } from "framer-motion"
 import Link from "next/link"
 
-const HERO_EYEBROW = "Spelling that feels like play"
 const HERO_HEADLINE = ["Learn every", "word like a", "champion."]
 const HERO_SUBHEAD =
-  "nexuset shows the meaning first, then asks kids to build the word one letter at a time. It feels like a small challenge, not a chore, and the progress adds up."
+  "Hear the word, spell it with focus, and watch progress build in every session."
 const CTA_PRIMARY = "Create an account"
 const CTA_SECONDARY = "Login"
 
@@ -44,21 +43,6 @@ export default function Hero() {
     <section className="relative flex min-h-[100dvh] items-center overflow-hidden bg-[var(--landing-section-alt)]">
       <div className="relative mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-12 px-6 pb-16 lg:grid-cols-[1.1fr_0.9fr]">
         <div className="relative z-10 flex flex-col gap-6">
-          <motion.div
-            className="flex items-center gap-3 text-xs font-medium uppercase tracking-[0.2em] text-[var(--landing-amber)]"
-            variants={fadeUp}
-            initial="hidden"
-            animate="visible"
-            custom={0}
-          >
-            <motion.span
-              className="h-2 w-2 rounded-full bg-[var(--landing-amber)]"
-              animate={{ scale: [1, 1.4, 1], opacity: [0.6, 1, 0.6] }}
-              transition={{ duration: 1.6, repeat: Infinity }}
-            />
-            ✦ {HERO_EYEBROW}
-          </motion.div>
-
           <div className="space-y-2">
             {HERO_HEADLINE.map((line, index) => (
               <motion.h1
@@ -101,30 +85,30 @@ export default function Hero() {
             variants={fadeUp}
             initial="hidden"
             animate="visible"
-            custom={0.4}
+            custom={0.3}
           >
             {HERO_SUBHEAD}
           </motion.p>
 
           <motion.div
-            className="flex flex-wrap items-center justify-center gap-4 sm:justify-start"
+            className="flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center sm:justify-start sm:gap-4"
             variants={fadeUp}
             initial="hidden"
             animate="visible"
-            custom={0.55}
+            custom={0.45}
           >
-            <Link href="/sign-up" className="flex">
+            <Link href="/sign-up" className="flex w-full sm:w-auto">
               <motion.span
                 whileTap={{ scale: 0.96 }}
-                className="flex h-12 w-[220px] shrink-0 items-center justify-center rounded-[10px] bg-[var(--landing-amber)] px-8 text-base font-medium text-white shadow-sm transition-all hover:-translate-y-[1px] hover:shadow-[0_8px_18px_rgba(217,119,87,0.35)] hover:brightness-[1.04]"
+                className="flex h-12 w-full items-center justify-center rounded-[10px] bg-[var(--landing-amber)] px-8 text-base font-medium text-white shadow-sm transition-all hover:-translate-y-[1px] hover:shadow-[0_8px_18px_rgba(217,119,87,0.35)] hover:brightness-[1.04] sm:w-[220px]"
               >
                 {CTA_PRIMARY}
               </motion.span>
             </Link>
-            <Link href="/login">
+            <Link href="/login" className="flex w-full sm:w-auto">
               <motion.span
               whileTap={{ scale: 0.96 }}
-              className="flex h-12 w-[220px] shrink-0 items-center justify-center rounded-[10px] border border-[var(--border)] px-8 text-base font-medium text-[var(--text-primary)] transition-all hover:-translate-y-[1px] hover:border-[var(--border-strong)] hover:bg-[var(--bg-elevated)]"
+              className="flex h-12 w-full items-center justify-center rounded-[10px] border border-[var(--border)] px-8 text-base font-medium text-[var(--text-primary)] transition-all hover:-translate-y-[1px] hover:border-[var(--border-strong)] hover:bg-[var(--bg-elevated)] sm:w-[220px]"
             >
               {CTA_SECONDARY}
               </motion.span>
@@ -163,12 +147,10 @@ export default function Hero() {
           {starPositions.map((star) => (
             <motion.span
               key={star.position}
-              className={`absolute ${star.position} text-sm text-[var(--landing-amber)]`}
+              className={`absolute ${star.position} inline-block h-2 w-2 rounded-full bg-[var(--landing-amber)] opacity-70`}
               animate={{ y: [-4, 6, -4] }}
               transition={{ duration: 4, repeat: Infinity, delay: star.delay }}
-            >
-              ✦
-            </motion.span>
+            />
           ))}
 
           <div className="absolute left-10 top-20 flex h-[280px] w-[320px] items-center justify-center">

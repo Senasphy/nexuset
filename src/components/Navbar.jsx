@@ -8,11 +8,11 @@ import ThemeToggle from "./ThemeToggle"
 
 const LOGO_PREFIX = "nexus"
 const LOGO_SUFFIX = "et"
-const CTA_LABEL = "Start free →"
+const CTA_LABEL = "Create account"
 
 const NAV_LINKS = [
   { label: "Features", href: "#features" },
-  { label: "Coming Soon", href: "#coming-soon" },
+  { label: "What's New", href: "#whats-new" },
   { label: "About", href: "#about" },
 ]
 
@@ -20,14 +20,14 @@ const mobileMenuVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { when: "beforeChildren", staggerChildren: 0.12 },
+    transition: { when: "beforeChildren", staggerChildren: 0.06 },
   },
-  exit: { opacity: 0, transition: { duration: 0.2 } },
+  exit: { opacity: 0, transition: { duration: 0.14 } },
 }
 
 const mobileItemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
+  hidden: { opacity: 0, y: 12 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.2 } },
 }
 
 export default function Navbar() {
@@ -123,12 +123,20 @@ export default function Navbar() {
                 </motion.div>
               ))}
               <motion.div variants={mobileItemVariants}>
-                <Link
-                  href="/sign-up"
-                  className="inline-flex items-center justify-center rounded-[10px] bg-[var(--landing-amber)] px-6 py-3 text-base font-medium text-white"
-                >
-                  {CTA_LABEL}
-                </Link>
+                <div className="mt-2 flex w-full max-w-sm flex-col gap-3">
+                  <Link
+                    href="/sign-up"
+                    className="inline-flex w-full items-center justify-center rounded-[10px] bg-[var(--landing-amber)] px-6 py-3 text-base font-medium text-white"
+                  >
+                    {CTA_LABEL}
+                  </Link>
+                  <Link
+                    href="/login"
+                    className="inline-flex w-full items-center justify-center rounded-[10px] border border-[var(--border)] px-6 py-3 text-base font-medium text-[var(--text-primary)]"
+                  >
+                    Login
+                  </Link>
+                </div>
               </motion.div>
             </motion.nav>
           </motion.div>

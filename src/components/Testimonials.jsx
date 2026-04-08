@@ -9,28 +9,28 @@ const TESTIMONIALS = [
     name: "Selam Tadesse",
     role: "Mother of a 9-year-old",
     quote:
-      "I walked in and she was doing it on her own. That never happens. Other apps felt loud, this one just made sense to her.",
+      "We do ten minutes after dinner. I can actually see which category needs help, and she does not fight me about practice anymore.",
     tone: "amber",
   },
   {
     name: "Biruk Alemu",
     role: "11 years old",
     quote:
-      "The word \"mysterious\" kept beating me. I finally got it and my score jumped. I want to beat my cousin now.",
+      "When I hear the pronunciation first, I get it faster. I missed 'mysterious' three times last week, then got it right today.",
     tone: "green",
   },
   {
     name: "Tigist Haile",
     role: "Father of two, ages 8 and 12",
     quote:
-      "One likes the timer, the other takes it slow. Both use it. I like that it is calm and not yelling at them.",
+      "My older one chases streaks, my younger one uses hints. Same app, different style, and both are improving without pressure.",
     tone: "blue",
   },
   {
     name: "Naol Bekele",
     role: "10 years old",
     quote:
-      "It is not super fun, but I keep coming back. I like seeing the boxes fill up.",
+      "The timer makes it feel like a game, but the words are real school words. I check my score after every session.",
     tone: "rose",
   },
 ]
@@ -91,7 +91,7 @@ export default function Testimonials() {
     <motion.div
       key={key}
       whileHover={{ y: -4, transition: { duration: 0.2 } }}
-      className="relative h-full min-h-[240px] w-[320px] shrink-0 rounded-[16px] border border-[var(--border)] bg-[var(--bg-surface)] p-7 transition-colors hover:border-[var(--border-strong)] md:w-[360px]"
+      className="relative h-full min-h-[240px] w-screen shrink-0 rounded-[16px] border border-[var(--border)] bg-[var(--bg-surface)] p-7 transition-colors hover:border-[var(--border-strong)] sm:w-[320px] md:w-[360px]"
     >
       <span className="absolute -top-5 left-5 font-display text-[5rem] font-semibold text-[var(--landing-amber)] opacity-[0.2]">
         "
@@ -118,8 +118,8 @@ export default function Testimonials() {
 
   return (
     <section className="bg-[var(--landing-section-alt)] py-30">
-      <div className="mx-auto max-w-6xl px-6">
-        <div className="text-center ">
+      <div className="mx-auto max-w-6xl px-0 sm:px-6">
+        <div className="px-6 text-center sm:px-0">
           <h2 className="font-display text-3xl font-semibold text-[var(--text-primary)]">
             What families are saying
           </h2>

@@ -42,9 +42,10 @@ export default function AboutSection() {
     <section id="about" className="bg-[var(--landing-section-alt)] py-20">
       <div className="mx-auto grid max-w-6xl grid-cols-1 gap-12 px-6 lg:grid-cols-[1.1fr_0.9fr]">
         <div className="flex flex-col gap-6">
-          <span className="text-xs font-medium uppercase tracking-[0.2em] text-[var(--landing-amber)]">
-            ✦ {EYEBROW}
-          </span>
+          <div className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.2em] text-[var(--landing-amber)]">
+            <span className="h-[6px] w-[6px] rounded-full bg-[var(--landing-amber)]" />
+            <span>{EYEBROW}</span>
+          </div>
           <div className="space-y-1">
               <h2
                 className="font-display text-[clamp(2.2rem,4vw,3.2rem)] font-light leading-tight text-[var(--landing-ink)]"

@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { BookOpen, LayoutGrid, Moon, Sun, Timer } from "lucide-react"
+import { BarChart3, BookOpen, LayoutGrid, Timer } from "lucide-react"
 import FeatureCard from "./FeatureCard"
 
 const SECTION_EMPHASIS = "actually"
@@ -34,15 +34,10 @@ const FEATURES_RIGHT = [
     tone: "amber",
   },
   {
-    title: "Light & dark mode",
+    title: "Progress monitoring",
     description:
-      "Warm light for daytime, deep dark for evenings. Both are gentle on the eyes during longer sessions.",
-    icon: (
-      <div className="flex items-center gap-1">
-        <Sun className="h-5 w-5" />
-        <Moon className="h-5 w-5" />
-      </div>
-    ),
+      "Track accuracy, session time, category strengths, and trends over time with clear visuals that guide what to practice next.",
+    icon: <BarChart3 className="h-7 w-7" />,
     tone: "amber",
   },
 ]
