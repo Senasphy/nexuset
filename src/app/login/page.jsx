@@ -59,8 +59,8 @@ export default function LoginPage() {
         <div className="absolute bottom-10 right-10 h-52 w-52 rounded-full bg-[var(--landing-amber)] opacity-[0.06] blur-3xl" />
       </div>
 
-      <div className="relative mx-auto flex min-h-screen w-full max-w-5xl items-center justify-center px-6 py-16">
-        <div className="w-full max-w-md rounded-[20px] border border-[var(--border)] bg-[var(--bg-surface)] px-8 py-10 shadow-[0_24px_60px_rgba(26,25,23,0.12)]">
+      <div className="relative mx-auto flex min-h-screen w-full max-w-5xl items-center justify-center px-0 py-0 sm:px-6 sm:py-16">
+        <div className="w-full min-h-screen bg-[var(--bg-surface)] px-6 py-10 sm:min-h-0 sm:max-w-md sm:rounded-[20px] sm:border sm:border-[var(--border)] sm:px-8 sm:py-10 sm:shadow-[0_24px_60px_rgba(26,25,23,0.12)]">
           <div className="space-y-2 text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--text-muted)]">
               Welcome back
@@ -112,7 +112,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className={`w-full rounded-[12px] bg-[var(--landing-amber)] py-3 text-sm font-semibold text-white transition-all hover:-translate-y-[1px] hover:shadow-[0_12px_24px_rgba(217,119,87,0.25)] ${
+              className={`w-full rounded-[12px] bg-[var(--landing-amber)] py-3 text-sm font-semibold text-white transition-all hover:-translate-y-[1px] ${
                 isLoading ? "cursor-not-allowed opacity-70" : ""
               }`}
             >
