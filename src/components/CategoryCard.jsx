@@ -1,41 +1,50 @@
 "use client"
 import Link from 'next/link'
-import { BookOpen, Sigma, FlaskConical, PenLine, Globe2 } from 'lucide-react'
+import { BookOpen, Sigma, FlaskConical, PenLine, Globe2, ArrowRight } from 'lucide-react'
 
 const CategoryCard = ({ category }) => {
-  const iconMap = {
-    General: BookOpen,
-    Math: Sigma,
-    Science: FlaskConical,
-    English: PenLine,
-    Geography: Globe2,
+  const configMap = {
+    General: { icon: BookOpen, tag: "Essential Words", bg: "bg-sky-300", accent: "text-sky-900" },
+    Math: { icon: Sigma, tag: "Numbers & Logic", bg: "bg-amber-300", accent: "text-amber-900" },
+    Science: { icon: FlaskConical, tag: "Discover & Space", bg: "bg-emerald-300", accent: "text-emerald-900" },
+    English: { icon: PenLine, tag: "Grammar & Vocab", bg: "bg-purple-300", accent: "text-purple-900" },
+    Geography: { icon: Globe2, tag: "World & Maps", bg: "bg-rose-300", accent: "text-rose-900" },
   }
-  const Icon = iconMap[category.name] || BookOpen
+  
+  const config = configMap[category.name] || { icon: BookOpen, tag: "Word Quest", bg: "bg-amber-300", accent: "text-amber-900" }
+  const Icon = config.icon
 
   return (
     <Link
       href={`/categories/${category.name.toLowerCase()}`}
-      className="group flex h-full flex-col justify-between rounded-[10px] border border-[var(--border)] bg-[var(--bg-surface)] px-4 py-5 transition-all duration-200 ease active:scale-[0.995] sm:min-h-[220px] sm:rounded-[12px] sm:px-7 sm:py-8 sm:hover:border-[var(--border-strong)] sm:hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] sm:active:scale-[0.98]"
+      className="group relative flex h-full flex-col justify-between rounded-[28px] border-[2.5px] border-black bg-white dark:bg-zinc-900 p-6 sm:p-7 shadow-[5px_5px_0px_#000000] dark:shadow-[5px_5px_0px_#3f3f46] transition-all hover:-translate-y-1 hover:shadow-[7px_7px_0px_#000000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[2px_2px_0px_#000000]"
     >
-      <div className="flex items-start">
-        <div className="flex h-12 w-12 items-center justify-center rounded-[12px] bg-[var(--bg-elevated)] text-[var(--text-primary)]">
-          <Icon className="h-7 w-7" strokeWidth={1.6} />
+      <div>
+        <div className="flex items-center justify-between">
+          <div className={`flex h-12 w-12 items-center justify-center rounded-2xl border-2 border-black ${config.bg} shadow-[2px_2px_0px_#000000]`}>
+            <Icon className="h-6 w-6 text-black" strokeWidth={2.5} />
+          </div>
+          <span className="inline-flex items-center rounded-full border-2 border-black bg-[#FAF6ED] dark:bg-zinc-800 px-3 py-1 font-fredoka text-[11px] font-black uppercase tracking-wider text-black dark:text-zinc-200 shadow-[1px_1px_0px_#000000]">
+            {config.tag}
+          </span>
+        </div>
+
+        <div className="mt-5 space-y-2">
+          <h3 className="font-fredoka text-2xl font-black tracking-tight text-black dark:text-white">
+            {category.name}
+          </h3>
+          <p className="font-fredoka text-sm font-semibold text-zinc-600 dark:text-zinc-300 leading-relaxed">
+            {category.description}
+          </p>
         </div>
       </div>
 
-      <div className="mt-6 space-y-3">
-        <h3 className="text-2xl-display text-[var(--text-primary)]">
-          <span className="relative inline-block group-hover:italic group-focus-visible:italic group-active:italic after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-0 after:bg-[var(--accent)] after:transition-[width] after:duration-150 after:ease-out group-hover:after:w-full group-focus-visible:after:w-full group-active:after:w-full">
-            {category.name}
-          </span>
-        </h3>
-        <p className="text-sm-body text-[var(--text-secondary)]">{category.description}</p>
-      </div>
-
-      <div className="mt-6 flex items-center justify-between">
-        <div className="group/button flex items-center gap-2 rounded-[999px] border border-[var(--border)] bg-[var(--bg-elevated)] px-4 py-2 text-sm font-medium text-[var(--text-primary)] transition-all duration-200 hover:-translate-y-[1px] hover:border-[var(--accent)] hover:bg-[var(--accent)] hover:text-white hover:shadow-[0_2px_6px_rgba(217,119,87,0.12)]">
-          Practice
-          <span className="text-[1rem] transition-transform duration-200 group-hover/button:translate-x-1">→</span>
+      <div className="mt-7 flex items-center justify-between border-t-2 border-black/10 dark:border-white/10 pt-4">
+        <span className="font-fredoka text-xs font-black uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+          Ready to spell?
+        </span>
+        <div className="inline-flex items-center gap-1.5 rounded-xl border-2 border-black bg-amber-400 px-4 py-2 font-fredoka text-xs font-black uppercase text-black shadow-[2px_2px_0px_#000000] transition-transform group-hover:bg-amber-300 group-hover:translate-x-0.5">
+          Start Quest <ArrowRight className="h-4 w-4" />
         </div>
       </div>
     </Link>

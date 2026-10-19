@@ -1,7 +1,7 @@
 "use client"
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { useSwipeable } from 'react-swipeable'
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 import { ArrowLeft, Lightbulb, Pause, Volume2 } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -24,7 +24,7 @@ const QuestionComponent = ({ questions, categoryName }) => {
     setIndex,
     decrementIndex,
     isPaused,
-    setIsPaused, // New setter
+    setIsPaused,
     isFinished,
     setIsFinished,
     resetIndex,
@@ -65,10 +65,11 @@ const QuestionComponent = ({ questions, categoryName }) => {
       resetTimer: s.resetTimer,
     }))
   );
+
   if (!questions?.length) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[var(--bg-base)] text-base-body text-[var(--text-secondary)]">
-        <ShimmerText text="Loading questions..." className="text-2xl" />
+        <ShimmerText text="Preparing your session questions..." className="text-2xl" />
       </div>
     )
   }
@@ -101,13 +102,12 @@ const QuestionComponent = ({ questions, categoryName }) => {
   const [isSpeaking, setIsSpeaking] = useState(false)
   const [speechVoice, setSpeechVoice] = useState(null)
 
-  // Initialization
   useEffect(() => {
     const init = setTimeout(() => {
       resetIndex()
       setIsFinished(false)
       resetScore()
-      setIsPaused(false) // Force unpause on load
+      setIsPaused(false)
       sessionStartAtRef.current = Date.now()
       totalPausedMsRef.current = 0
       pauseStartedAtRef.current = null
@@ -196,13 +196,13 @@ const QuestionComponent = ({ questions, categoryName }) => {
 
     const utterance = new window.SpeechSynthesisUtterance(currentQuestion?.correctAnswer || word)
     utterance.lang = "en-US"
-    utterance.rate = 0.9
+    utterance.rate = 0.88
     utterance.pitch = 1
     if (speechVoice) utterance.voice = speechVoice
+    utterance.onstart = () => setIsSpeaking(true)
     utterance.onend = () => setIsSpeaking(false)
     utterance.onerror = () => setIsSpeaking(false)
 
-    setIsSpeaking(true)
     synth.speak(utterance)
   }
 
@@ -210,11 +210,10 @@ const QuestionComponent = ({ questions, categoryName }) => {
     if (!autoPronounce || isPaused || isFinished || !word) return
     const autoSpeakTimer = setTimeout(() => {
       handlePronounce()
-    }, 180)
+    }, 200)
     return () => clearTimeout(autoSpeakTimer)
   }, [safeIndex, word, autoPronounce, isPaused, isFinished])
 
-  // Question / Timer Logic
   useEffect(() => {
     isTransitioning.current = false
     setUserAnswer(new Array(word.length).fill(""))
@@ -239,7 +238,7 @@ const QuestionComponent = ({ questions, categoryName }) => {
       if (transitionTimeoutRef.current) clearTimeout(transitionTimeoutRef.current)
       clearTimeout(focusTimer)
     }
-  }, [safeIndex, word, countdownTime]) // Reset timer on question change
+  }, [safeIndex, word, countdownTime])
 
   useEffect(() => {
     if (isPaused) {
@@ -283,8 +282,7 @@ const QuestionComponent = ({ questions, categoryName }) => {
       timeSpentSeconds,
       startedAt: new Date(sessionStartAtRef.current).toISOString(),
       endedAt: new Date(endedAtMs).toISOString(),
-    }).catch(() => {
-    })
+    }).catch(() => {})
   }, [isFinished, questions.length, currentScore, categoryName, difficulty, questionCount, user?.uid])
 
   const evaluateAnswer = (answer) => {
@@ -311,7 +309,7 @@ const QuestionComponent = ({ questions, categoryName }) => {
     if (transitionTimeoutRef.current) clearTimeout(transitionTimeoutRef.current)
     transitionTimeoutRef.current = setTimeout(() => {
       goToNextQuestion(true)
-    }, isCorrect ? 2000 : 3000)
+    }, isCorrect ? 1800 : 2800)
   }
 
   const handleInputChange = (e, i) => {
@@ -429,58 +427,101 @@ const QuestionComponent = ({ questions, categoryName }) => {
     trackMouse: true,
   })
 
-  const wordHint = word.length
-    ? `[ ${new Array(word.length).fill("_").join(" ")} ]`
-    : ""
+  // Scrambled letters for on-screen chip keyboard (friendly for kids & tablets)
+  const scrambledPool = useMemo(() => {
+    if (!word) return []
+    const letters = word.toUpperCase().split("")
+    const commonDistractors = ["E", "A", "R", "S", "T", "O", "I", "N"]
+      .filter((l) => !letters.includes(l))
+      .slice(0, 2)
+    return [...letters, ...commonDistractors].sort((a, b) => a.localeCompare(b))
+  }, [word])
+
+  const handleLetterChipClick = (char) => {
+    if (secondsLeft === 0 || isSuccess || isTransitioning.current || isPaused) return
+    const firstEmptyIndex = userAnswer.findIndex((c) => !c)
+    if (firstEmptyIndex !== -1) {
+      const nextAnswer = [...userAnswer]
+      nextAnswer[firstEmptyIndex] = char.toLowerCase()
+      setUserAnswer(nextAnswer)
+      const nextInput = inputRefs.current[firstEmptyIndex + 1]
+      if (nextInput) {
+        nextInput.focus()
+      }
+      if (nextAnswer.every((c) => Boolean(c))) {
+        evaluateAnswer(nextAnswer)
+      }
+    }
+  }
+
+  const handleBackspaceChip = () => {
+    if (secondsLeft === 0 || isSuccess || isTransitioning.current || isPaused) return
+    let lastFilledIndex = -1
+    for (let i = userAnswer.length - 1; i >= 0; i--) {
+      if (userAnswer[i]) {
+        lastFilledIndex = i
+        break
+      }
+    }
+    if (lastFilledIndex !== -1) {
+      const nextAnswer = [...userAnswer]
+      nextAnswer[lastFilledIndex] = ""
+      setUserAnswer(nextAnswer)
+      const prevInput = inputRefs.current[lastFilledIndex]
+      if (prevInput) prevInput.focus()
+    }
+  }
+
   const displayCategory = categoryName
     ? categoryName.charAt(0).toUpperCase() + categoryName.slice(1)
-    : "Session"
+    : "Spelling"
   const scorePercent = questions?.length
     ? Math.round((currentScore / questions.length) * 100)
     : 0
-  const scoreColor =
-    scorePercent >= 80
-      ? "var(--correct)"
-      : scorePercent >= 50
-        ? "var(--accent)"
-        : "var(--wrong)"
 
   return (
-    <div className="min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)]">
-      <header className="sticky top-0 z-40 h-16 border-b border-[var(--border)] bg-[var(--bg-base)]">
-        <div className="mx-auto flex h-full max-w-6xl items-center justify-between px-6">
-          <div className="flex items-center gap-4">
+    <div className="min-h-screen bg-[#FAF6ED] dark:bg-zinc-950 text-black dark:text-white">
+      {/* Floating Pill Capsule Header (Matching Reference Screenshot) */}
+      <header className="sticky top-3 z-sticky px-4 sm:px-6">
+        <div className="mx-auto flex max-w-6xl items-center justify-between rounded-full border-2 border-black bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md px-4 sm:px-6 py-2.5 shadow-[4px_4px_0px_#000000] dark:shadow-[4px_4px_0px_#3f3f46]">
+          <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={handleBackPress}
-              className="flex items-center gap-2 rounded-[8px] border border-[var(--border)] px-3 py-2 text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)]"
+              className="flex items-center gap-1.5 rounded-full border-2 border-black bg-amber-400 px-3.5 py-1.5 font-fredoka text-xs font-black uppercase text-black shadow-[2px_2px_0px_#000000] hover:bg-amber-300 transition-all active:translate-x-[1px] active:translate-y-[1px]"
             >
               <ArrowLeft className="h-4 w-4" />
-              Back
+              Topics
             </button>
-            <span className="hidden text-xl-ui text-[var(--text-primary)] sm:inline">
-              {displayCategory}
+            <span className="hidden sm:inline-block rounded-full border border-black bg-[#FAF6ED] dark:bg-zinc-800 px-3 py-0.5 font-fredoka text-xs font-black uppercase text-black dark:text-white shadow-[1px_1px_0px_#000000]">
+              {displayCategory} Quest
             </span>
           </div>
 
-          <div className="flex items-center gap-4">
-            <div
-              className="font-mono text-[1.25rem] font-medium"
-              style={{
-                color:
+          {/* Center / Right: Countdown Timer Block like Screenshot */}
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1.5 rounded-2xl border-2 border-black bg-[#FAF6ED] dark:bg-zinc-800 px-3.5 py-1 shadow-[2px_2px_0px_#000000]">
+              <span className="font-fredoka text-[11px] font-black uppercase text-zinc-600 dark:text-zinc-400">
+                Time Left:
+              </span>
+              <span
+                className={`font-fredoka text-base font-black ${
                   secondsLeft <= 5
-                    ? "var(--wrong)"
+                    ? "text-rose-600 animate-pulse"
                     : secondsLeft <= 10
-                      ? "var(--accent)"
-                      : "var(--text-primary)",
-              }}
-            >
-              {secondsLeft}s
+                      ? "text-amber-500"
+                      : "text-black dark:text-white"
+                }`}
+              >
+                {secondsLeft}s
+              </span>
             </div>
+
             <button
               onClick={handlePause}
-              className="flex h-9 w-9 items-center justify-center rounded-[6px] border border-[var(--border)] text-[var(--text-primary)] transition-colors hover:bg-[var(--bg-elevated)]"
-              aria-label="Pause session"
+              className="flex h-9 w-9 items-center justify-center rounded-xl border-2 border-black bg-white dark:bg-zinc-800 text-black dark:text-white shadow-[2px_2px_0px_#000000] hover:bg-amber-300 transition-all active:translate-x-[1px] active:translate-y-[1px]"
+              aria-label="Pause quest"
+              title="Pause"
             >
               <Pause className="h-4 w-4" />
             </button>
@@ -488,195 +529,255 @@ const QuestionComponent = ({ questions, categoryName }) => {
         </div>
       </header>
 
-      <div className="mx-auto flex w-full max-w-6xl gap-8 px-6 py-8">
+      {/* Main Practice Container */}
+      <div className="mx-auto flex w-full max-w-6xl gap-8 px-4 sm:px-6 pt-6 pb-12">
         <QuestionSidebar totalQuestions={questions.length} />
-        <main className="flex min-h-[calc(100vh-64px)] flex-1 flex-col justify-center">
-          <div className="mx-auto flex w-full max-w-3xl flex-col items-center gap-8" {...handlers}>
-            <div className="w-full rounded-[12px] border border-[var(--border)] bg-[var(--bg-surface)] p-6">
-              <div className="mb-3 flex items-center justify-between">
-                <span className="text-xs-label text-[var(--text-muted)]">Definition</span>
+
+        <main id="main" className="flex min-h-[calc(100dvh-100px)] flex-1 flex-col justify-center">
+          <div className="mx-auto flex w-full max-w-2xl flex-col items-center gap-6" {...handlers}>
+            
+            {/* The Central Question Card (Inspired by Screenshot's Center Card) */}
+            <div className="w-full rounded-[32px] border-[2.5px] border-black bg-white dark:bg-zinc-900 p-6 sm:p-8 shadow-[6px_6px_0px_#000000] dark:shadow-[6px_6px_0px_#3f3f46]">
+              
+              {/* Question Index Pill & Audio Button */}
+              <div className="flex items-center justify-between border-b-2 border-black/10 dark:border-white/10 pb-4 mb-5">
+                <span className="rounded-full border-2 border-black bg-amber-300 px-3 py-1 font-fredoka text-xs font-black uppercase text-black shadow-[2px_2px_0px_#000000]">
+                  Word {safeIndex + 1} of {questions.length}
+                </span>
+
                 <button
                   type="button"
                   onClick={handlePronounce}
                   disabled={!word}
-                  className="inline-flex h-8 items-center gap-2 rounded-[8px] border border-[var(--border)] px-3 text-xs-label text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-elevated)] disabled:cursor-not-allowed disabled:opacity-50"
+                  className="inline-flex items-center gap-2 rounded-2xl border-2 border-black bg-amber-400 px-4 py-2 font-fredoka text-xs font-black uppercase text-black shadow-[2px_2px_0px_#000000] hover:bg-amber-300 transition-all active:translate-x-[1px] active:translate-y-[1px] disabled:opacity-50"
                   aria-label="Pronounce the answer"
                 >
-                  <Volume2 className={`h-3.5 w-3.5 ${isSpeaking ? "text-[var(--accent)]" : ""}`} />
-                  Pronounce
+                  <Volume2 className={`h-4 w-4 ${isSpeaking ? "animate-bounce" : ""}`} />
+                  Hear Word 🔊
                 </button>
               </div>
-              <p className="text-lg-body text-[var(--text-primary)]">
-                {currentQuestion?.definition}
-              </p>
-              <p className="mt-4 font-mono text-[0.95rem] text-[var(--text-muted)]">{wordHint}</p>
-            </div>
 
-            <ul className="flex flex-wrap justify-center gap-[6px]">
-              {userAnswer.map((char, i) => {
-                const isRevealed = revealedIndices[i]
-                const stateClass = isSuccess
-                  ? "border-[var(--correct-border)] bg-[var(--correct-bg)] text-[var(--correct)]"
-                  : isError
-                    ? "border-[var(--wrong-border)] bg-[var(--wrong-bg)] text-[var(--wrong)]"
-                    : isRevealed
-                      ? "border-[var(--border-strong)] border-dashed bg-[var(--neutral-letter)] text-[var(--text-muted)]"
-                      : "border-[var(--border)] bg-[var(--neutral-letter)] text-[var(--text-primary)]"
+              {/* Clue Speech Frame */}
+              <div className="relative rounded-2xl border-2 border-black bg-[#FAF6ED] dark:bg-zinc-800 p-5 shadow-[3px_3px_0px_#000000]">
+                <p className="font-fredoka text-base sm:text-lg font-bold text-black dark:text-zinc-100 leading-relaxed">
+                  &ldquo;{currentQuestion?.definition}&rdquo;
+                </p>
+                <div className="mt-2.5 flex items-center justify-between font-fredoka text-xs font-bold text-zinc-600 dark:text-zinc-400">
+                  <span>Target length: {word.length} letters</span>
+                  <span>Type or tap letters below</span>
+                </div>
+              </div>
 
-                return (
-                  <li key={i}>
-                    <input
-                      type="text"
-                      maxLength={1}
-                      value={char}
+              {/* Letter Tiles Slots */}
+              <div className="mt-8 space-y-4">
+                <ul className="flex flex-wrap justify-center gap-2 sm:gap-2.5">
+                  {userAnswer.map((char, i) => {
+                    const isRevealed = revealedIndices[i]
+                    const stateClass = isSuccess
+                      ? "border-black bg-emerald-300 text-black animate-letter-correct"
+                      : isError
+                        ? "border-black bg-rose-300 text-black animate-letter-shake"
+                        : isRevealed
+                          ? "border-dashed border-black bg-amber-100 text-amber-900"
+                          : char
+                            ? "border-black bg-white dark:bg-zinc-800 text-black dark:text-white"
+                            : "border-black bg-[#FAF6ED] dark:bg-zinc-800 text-zinc-400"
+
+                    return (
+                      <li key={i}>
+                        <input
+                          type="text"
+                          maxLength={1}
+                          value={char}
+                          disabled={secondsLeft === 0 || isSuccess || isTransitioning.current || isPaused}
+                          ref={(el) => (inputRefs.current[i] = el)}
+                          onChange={(e) => handleInputChange(e, i)}
+                          onKeyDown={(e) => handleKeyDown(e, i)}
+                          className={`h-14 w-12 sm:h-16 sm:w-14 rounded-2xl border-2 text-center font-fredoka text-2xl font-black uppercase outline-none shadow-[3px_3px_0px_#000000] transition-all focus:border-amber-500 ${stateClass}`}
+                          style={{
+                            animationDelay: isSuccess ? `${i * 45}ms` : "0ms",
+                          }}
+                        />
+                      </li>
+                    )
+                  })}
+                </ul>
+
+                {showCorrectAnswer && (
+                  <p className="mt-3 text-center font-fredoka text-xs font-bold text-zinc-600 dark:text-zinc-400">
+                    Correct word was: <span className="font-fredoka text-sm font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">{word}</span>
+                  </p>
+                )}
+              </div>
+
+              {/* On-Screen Clickable Letter Chips (For Kids & Tablets) */}
+              <div className="mt-6 pt-5 border-t-2 border-black/10 dark:border-white/10 text-center">
+                <p className="font-fredoka text-[11px] font-black uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-2.5">
+                  Tap Letter Chips:
+                </p>
+                <div className="flex flex-wrap items-center justify-center gap-2">
+                  {scrambledPool.map((letter, idx) => (
+                    <button
+                      key={`${letter}-${idx}`}
+                      type="button"
+                      onClick={() => handleLetterChipClick(letter)}
                       disabled={secondsLeft === 0 || isSuccess || isTransitioning.current || isPaused}
-                      ref={(el) => (inputRefs.current[i] = el)}
-                      onChange={(e) => handleInputChange(e, i)}
-                      onKeyDown={(e) => handleKeyDown(e, i)}
-                      className={`text-letter h-[60px] w-[52px] rounded-[8px] border-2 text-center uppercase outline-none shadow-[inset_0_1px_3px_rgba(0,0,0,0.06)] transition-all focus:scale-[1.05] focus:border-[var(--border-strong)] focus:shadow-[0_0_0_2px_var(--accent-ring)] ${stateClass} ${isSuccess ? "animate-letter-correct" : ""} ${isError ? "animate-letter-wrong" : ""}`}
-                      style={{
-                        animationDelay: isSuccess ? `${i * 40}ms` : "0ms",
-                      }}
-                    />
-                  </li>
-                )
-              })}
-            </ul>
-            {showCorrectAnswer && (
-              <p className="mt-1 text-xs-label text-[var(--text-muted)]">
-                Correct spelling: <span className="font-mono text-[var(--text-secondary)]">{word.toUpperCase()}</span>
-              </p>
-            )}
+                      className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-xl border-2 border-black bg-[#FAF6ED] dark:bg-zinc-800 font-fredoka text-base sm:text-lg font-black text-black dark:text-white shadow-[2px_2px_0px_#000000] hover:bg-amber-300 active:translate-x-[1px] active:translate-y-[1px] disabled:opacity-40"
+                    >
+                      {letter}
+                    </button>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={handleBackspaceChip}
+                    title="Delete letter"
+                    disabled={secondsLeft === 0 || isSuccess || isTransitioning.current || isPaused}
+                    className="flex h-10 px-3 items-center justify-center rounded-xl border-2 border-black bg-zinc-200 dark:bg-zinc-700 font-fredoka text-xs font-black text-black dark:text-white shadow-[2px_2px_0px_#000000] hover:bg-zinc-300 active:translate-x-[1px] active:translate-y-[1px] disabled:opacity-40"
+                  >
+                    ⌫ Erase
+                  </button>
+                </div>
+              </div>
 
-            <div className="flex w-full items-center justify-between">
-              <div className="flex items-center gap-2">
+              {/* Action Bar (Skip, Hint, Submit) */}
+              <div className="mt-6 flex flex-wrap items-center justify-between gap-3 pt-5 border-t-2 border-black/10 dark:border-white/10">
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => !isTransitioning.current && goToNextQuestion(false)}
+                    disabled={isTransitioning.current}
+                    className="text-xs font-black uppercase"
+                  >
+                    Skip Word
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={handleHint}
+                    disabled={hasUsedHint || isSuccess || isTransitioning.current || userAnswer.every((letter) => letter)}
+                    className="text-xs font-black bg-amber-100 hover:bg-amber-200"
+                  >
+                    <Lightbulb className="h-4 w-4 mr-1 text-amber-500 fill-amber-500" />
+                    Hint {hasUsedHint ? "✓" : ""}
+                  </Button>
+                </div>
+
                 <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => !isTransitioning.current && goToNextQuestion(false)}
-                  disabled={isTransitioning.current}
+                  variant="primary"
+                  onClick={handleCheck}
+                  disabled={isSuccess || isTransitioning.current || userAnswer.some((letter) => !letter)}
+                  className="px-7 py-3 text-sm font-black shadow-[3px_3px_0px_#000000]"
                 >
-                  Skip
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleHint}
-                  disabled={hasUsedHint || isSuccess || isTransitioning.current || userAnswer.every((letter) => letter)}
-                >
-                  <Lightbulb className="h-4 w-4" />
-                  Hint
+                  Submit Answer 🚀
                 </Button>
               </div>
-              <Button
-                variant="primary"
-                onClick={handleCheck}
-                disabled={isSuccess || isTransitioning.current || userAnswer.some((letter) => !letter)}
-              >
-                Check →
-              </Button>
+
+              {/* Progress Bar */}
+              <div className="mt-6">
+                <div className="h-3 w-full rounded-full border-2 border-black bg-zinc-100 dark:bg-zinc-800 overflow-hidden shadow-[1px_1px_0px_#000000]">
+                  <div
+                    className="h-full bg-amber-400 transition-all duration-300"
+                    style={{ width: `${((safeIndex + 1) / questions.length) * 100}%` }}
+                  />
+                </div>
+              </div>
+
             </div>
 
-            <Progress value={((safeIndex + 1) / questions.length) * 100} className="h-1 w-full" />
           </div>
         </main>
       </div>
 
+      {/* Pause Modal */}
       <Dialog open={isPauseOpen} onOpenChange={(open) => !open && handleResume()}>
-        <DialogContent className="w-[calc(100%-2rem)] max-w-[520px] overflow-hidden data-[state=open]:animate-none data-[state=closed]:animate-none sm:w-full">
-          <motion.div
-            initial={{ opacity: 0, y: 12, scale: 0.985 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.28, ease: [0.22, 0.61, 0.36, 1] }}
-          >
-            <DialogHeader className="text-center">
-              <DialogTitle className="text-center">Session paused</DialogTitle>
-              <DialogDescription>Take a breath, then jump back in.</DialogDescription>
-            </DialogHeader>
-            <div className="mt-6 flex flex-col gap-3 px-2 sm:flex-row sm:justify-center sm:px-0">
-              <Button variant="primary" onClick={handleResume} className="w-full sm:w-auto">
-                Resume
-              </Button>
-              <Button
-                variant="secondary"
-                onClick={handleRestart}
-                className="w-full bg-[var(--bg-elevated)] text-[var(--text-primary)] hover:bg-[var(--bg-surface)] sm:w-auto"
-              >
-                Restart
-              </Button>
-              <Button
-                variant="ghost"
-                className="w-full lg:hidden sm:w-auto"
-                onClick={() => {
-                  setIsPauseOpen(false)
-                  setIsSidebarOpen(true)
-                }}
-              >
-                View stats
-              </Button>
-            </div>
-          </motion.div>
+        <DialogContent className="max-w-[440px] text-center">
+          <DialogHeader className="text-center">
+            <DialogTitle className="text-center font-fredoka text-3xl font-black text-black dark:text-white uppercase tracking-wide">
+              Quest Paused ⏸️
+            </DialogTitle>
+            <DialogDescription className="text-center font-fredoka text-sm font-semibold text-zinc-600 dark:text-zinc-300">
+              Take a quick breath and hop right back in!
+            </DialogDescription>
+          </DialogHeader>
+          <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
+            <Button variant="primary" onClick={handleResume} className="w-full sm:w-auto">
+              Resume Quest
+            </Button>
+            <Button variant="secondary" onClick={handleRestart} className="w-full sm:w-auto">
+              Restart
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
 
+      {/* Quit Prompt Modal */}
       <Dialog open={isQuitPromptOpen} onOpenChange={(open) => !open && handleQuitResume()}>
-        <DialogContent className="w-[calc(100%-2rem)] max-w-[460px] overflow-hidden data-[state=open]:animate-none data-[state=closed]:animate-none sm:w-full">
-          <motion.div
-            initial={{ opacity: 0, y: 12, scale: 0.985 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.24, ease: [0.22, 0.61, 0.36, 1] }}
-          >
-            <DialogHeader className="text-center">
-              <DialogTitle className="text-center">Quit this session?</DialogTitle>
-              <DialogDescription>
-                Are you sure you want to quit? Your current progress for this run will be lost.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="mt-6 flex flex-col gap-3 px-2 sm:flex-row sm:justify-center sm:px-0">
-              <Button variant="primary" onClick={handleQuitResume} className="w-full sm:w-auto">
-                Resume
-              </Button>
-              <Button variant="danger" onClick={handleQuitConfirm} className="w-full sm:w-auto">
-                Quit
-              </Button>
-            </div>
-          </motion.div>
+        <DialogContent className="max-w-[440px] text-center">
+          <DialogHeader className="text-center">
+            <DialogTitle className="text-center font-fredoka text-3xl font-black text-black dark:text-white uppercase tracking-wide">
+              Leave This Quest?
+            </DialogTitle>
+            <DialogDescription className="text-center font-fredoka text-sm font-semibold text-zinc-600 dark:text-zinc-300">
+              Your progress for this run will not be saved.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
+            <Button variant="primary" onClick={handleQuitResume} className="w-full sm:w-auto">
+              Keep Going!
+            </Button>
+            <Button variant="danger" onClick={handleQuitConfirm} className="w-full sm:w-auto">
+              Quit Quest
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
 
+      {/* Session Complete Modal (Celebration) */}
       <Dialog open={isFinished} onOpenChange={(open) => !open && setIsFinished(false)}>
-        <DialogContent className="overflow-hidden">
+        <DialogContent className="overflow-hidden p-8 text-center max-w-[480px]">
           {scorePercent >= 80 && (
             <div className="pointer-events-none absolute inset-0">
-              {[...Array(8)].map((_, idx) => (
+              {[...Array(12)].map((_, idx) => (
                 <span
                   key={idx}
                   className="confetti-dot"
                   style={{
-                    left: `${10 + idx * 10}%`,
-                    top: "70%",
-                    background: idx % 2 === 0 ? "var(--accent)" : "var(--correct)",
-                    animationDelay: `${idx * 60}ms`,
+                    left: `${8 + idx * 7.5}%`,
+                    top: "65%",
+                    background: idx % 2 === 0 ? "#F59E0B" : "#10B981",
+                    animationDelay: `${idx * 50}ms`,
                   }}
                 />
               ))}
             </div>
           )}
+
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl border-2 border-black bg-amber-400 text-black shadow-[3px_3px_0px_#000000] mb-3">
+            <span className="font-fredoka text-3xl">🏆</span>
+          </div>
+
           <DialogHeader className="text-center">
-            <DialogTitle className="text-center">Session complete</DialogTitle>
-            <DialogDescription>Your focus paid off.</DialogDescription>
+            <DialogTitle className="text-center font-fredoka text-3xl font-black text-black dark:text-white uppercase tracking-wide">
+              Quest Complete!
+            </DialogTitle>
+            <DialogDescription className="text-center font-fredoka text-sm font-semibold text-zinc-600 dark:text-zinc-300">
+              {scorePercent >= 80 ? "Outstanding spelling mastery!" : "Great effort! Practice makes permanent!"}
+            </DialogDescription>
           </DialogHeader>
-          <div className="mt-6 text-center">
-            <p className="font-display text-[3rem] font-semibold" style={{ color: scoreColor }}>
+
+          <div className="mt-5 rounded-2xl border-2 border-black bg-white dark:bg-zinc-800 p-5 shadow-[3px_3px_0px_#000000]">
+            <p className="font-fredoka text-5xl font-black text-amber-500 leading-none">
               {scorePercent}%
             </p>
-            <p className="text-sm-body text-[var(--text-secondary)]">
-              {currentScore} correct out of {questions.length}
+            <p className="mt-2 font-fredoka text-sm font-bold text-zinc-700 dark:text-zinc-300">
+              You got <strong className="text-black dark:text-white text-base">{currentScore}</strong> correct out of <strong className="text-black dark:text-white text-base">{questions.length}</strong> words.
             </p>
           </div>
-          <DialogFooter className="mt-8">
-            <Button variant="primary" asChild>
-              <Link href="/categories">Back to Categories</Link>
+
+          <DialogFooter className="mt-6 flex justify-center sm:justify-center">
+            <Button variant="primary" asChild className="h-12 px-8 text-sm font-black shadow-[3px_3px_0px_#000000]">
+              <Link href="/categories">Choose Next Quest 🚀</Link>
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -685,3 +786,4 @@ const QuestionComponent = ({ questions, categoryName }) => {
   )
 }
 export default QuestionComponent
+
