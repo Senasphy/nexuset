@@ -1,84 +1,79 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-    darkMode: 'class',
-    content: [
+  darkMode: 'class',
+  content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
-  safelist: [
-        'bg-card_general',
-        'bg-card_science',
-        'bg-card_maths',
-        'bg-card_english',
-        'bg-card_geography',
-    ],
   theme: {
-  	extend: {
-  		colors: {
-  			background: 'var(--bg-base)',
-  			foreground: 'var(--text-primary)',
-  			card: {
-  				DEFAULT: 'var(--bg-surface)',
-  				foreground: 'var(--text-primary)'
-  			},
-        card_general: "#F3C5C5",
-        card_science: "#C0F1DC",
-        card_maths : "#F9E1C0",
-        card_english : "#F8B575", 
-        card_geography:  "#D5D3FF",
-  			popover: {
-  				DEFAULT: 'var(--bg-surface)',
-  				foreground: 'var(--text-primary)'
-  			},
-  			primary: {
-  				DEFAULT: 'var(--accent)',
-  				foreground: '#ffffff'
-  			},
-  			secondary: {
-  				DEFAULT: 'var(--bg-elevated)',
-  				foreground: 'var(--text-primary)'
-  			},
-  			muted: {
-  				DEFAULT: 'var(--bg-elevated)',
-  				foreground: 'var(--text-muted)'
-  			},
-  			accent: {
-  				DEFAULT: 'var(--accent)',
-  				foreground: '#ffffff'
-  			},
-  			destructive: {
-  				DEFAULT: 'var(--wrong)',
-  				foreground: '#ffffff'
-  			},
+    extend: {
+      colors: {
+        background: 'var(--bg-base)',
+        foreground: 'var(--text-primary)',
+        card: {
+          DEFAULT: 'var(--bg-surface)',
+          foreground: 'var(--text-primary)'
+        },
+        popover: {
+          DEFAULT: 'var(--bg-surface)',
+          foreground: 'var(--text-primary)'
+        },
+        primary: {
+          DEFAULT: 'var(--accent)',
+          foreground: 'var(--accent-foreground)'
+        },
+        secondary: {
+          DEFAULT: 'var(--bg-elevated)',
+          foreground: 'var(--text-primary)'
+        },
+        muted: {
+          DEFAULT: 'var(--bg-elevated)',
+          foreground: 'var(--text-muted)'
+        },
+        accent: {
+          DEFAULT: 'var(--accent)',
+          foreground: 'var(--accent-foreground)'
+        },
+        ink: 'var(--text-primary)',
+        destructive: {
+          DEFAULT: 'var(--wrong)',
+          foreground: '#ffffff'
+        },
         custom: 'var(--border)',
- 			border: 'var(--border)',
-  			input: 'var(--border)',
-  			ring: 'var(--accent)',
-  		},
-  		borderRadius: {
-  			lg: 'var(--radius)',
-  			md: 'calc(var(--radius) - 2px)',
-  			sm: 'calc(var(--radius) - 4px)'
-  		},
-		screens:{
-			md1: '430px',
-			md2: '480px',
-			lg1: '950px'
-		
-			
-		},
-
-    backgroundImage:{
-      'new-bg':"url('/newBg.jpg')",
-      'dark-bg':"url('/darkBg.jpg')",
-      'darkDot-bg':"url('/darkDot.jpg')",
-      'lightDot-bg':"url('/lightDot.jpg')",
-      'greenGirl-bg':"url('/greenGirl.jpg')",
-      'calm-bg': "url('/backgroundCalm.jpg')",
+        border: 'var(--border)',
+        input: 'var(--border)',
+        ring: 'var(--accent)',
+      },
+      borderRadius: {
+        lg: 'var(--radius)',
+        md: 'calc(var(--radius) - 2px)',
+        sm: 'calc(var(--radius) - 4px)'
+      },
+      boxShadow: {
+        sm: 'var(--shadow-sm)',
+        md: 'var(--shadow-md)',
+        lg: 'var(--shadow-lg)',
+        xl: 'var(--shadow-xl)',
+        accent: 'var(--shadow-accent)',
+        retro: '4px 4px 0px #000000',
+        'retro-sm': '2px 2px 0px #000000',
+        'retro-lg': '6px 6px 0px #000000',
+        'retro-dark': '4px 4px 0px #27272a',
+      },
+      fontFamily: {
+        sans: ['var(--font-sans)', 'sans-serif'],
+        fredoka: ['var(--font-fredoka)', 'var(--font-sans)', 'sans-serif'],
+        display: ['var(--font-fredoka)', 'var(--font-sans)', 'sans-serif'],
+        mono: ['var(--font-mono)', 'monospace'],
+      },
+      zIndex: {
+        sticky: 'var(--z-sticky)',
+        overlay: 'var(--z-overlay)',
+        modal: 'var(--z-modal)',
+        popover: 'var(--z-popover)',
+      },
     }
-
-  	}
   },
   plugins: [require("tailwindcss-animate")],
 };

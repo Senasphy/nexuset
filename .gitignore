@@ -41,3 +41,11 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 .env*.local
+
+# agents & local tool artifacts
+.agents/
+skills-lock.json
+.pnpm-store/
+pnpm-lock.yaml
+pnpm-workspace.yaml
+

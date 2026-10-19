@@ -28,13 +28,13 @@ const DialogContent = React.forwardRef(({ className, children, ...props }, ref) 
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed left-[50%] top-[50%] z-50 w-full max-w-[480px] translate-x-[-50%] translate-y-[-50%] rounded-[16px] border border-[var(--border)] bg-[var(--bg-surface)] p-8 shadow-[0_20px_60px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_60px_rgba(0,0,0,0.5)] data-[state=open]:animate-[modal-in_200ms_ease-out] data-[state=closed]:animate-[modal-out_150ms_ease-in]",
+        "fixed left-[50%] top-[50%] z-50 w-full max-w-[480px] translate-x-[-50%] translate-y-[-50%] rounded-[32px] border-[2.5px] border-black bg-[#FAF6ED] dark:bg-zinc-900 p-7 sm:p-8 shadow-[6px_6px_0px_#000000] dark:shadow-[6px_6px_0px_#3f3f46] data-[state=open]:animate-[modal-in_200ms_ease-out] data-[state=closed]:animate-[modal-out_150ms_ease-in]",
         className
       )}
       {...props}
     >
       {children}
-      <DialogPrimitive.Close className="absolute right-4 top-4 rounded-[6px] p-1.5 text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)]">
+      <DialogPrimitive.Close className="absolute right-4 top-4 rounded-xl border-2 border-black bg-white dark:bg-zinc-800 p-1.5 text-black dark:text-white shadow-[2px_2px_0px_#000000] hover:bg-amber-300 transition-colors">
         <X className="h-4 w-4" />
         <span className="sr-only">Close</span>
       </DialogPrimitive.Close>

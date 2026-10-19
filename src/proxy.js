@@ -16,10 +16,6 @@ export function proxy(request) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 
-  if (hasSession && (pathname === '/login' || pathname === '/sign-up')) {
-    return NextResponse.redirect(new URL('/categories', request.url))
-  }
-
   return NextResponse.next()
 }
 
