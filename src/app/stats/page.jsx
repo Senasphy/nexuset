@@ -2,12 +2,13 @@
 
 import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
-import { ArrowLeft, ArrowRight, CalendarDays, Clock3, Flame, Target, Trophy } from "lucide-react"
+import { ArrowLeft, ArrowRight, CalendarDays, Clock3, Flame, Target, Trophy, BookOpen } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/context/AuthContext"
 import { fetchUserSessions } from "@/lib/sessionAnalytics"
 import ShimmerText from "@/components/kokonutui/shimmer-text"
 import WeekdayMinutesChart from "@/components/WeekdayMinutesChart"
+import ThemeToggle from "@/components/ThemeToggle"
 
 const formatDayKey = (date) => {
   const year = date.getFullYear()
@@ -218,52 +219,87 @@ export default function Stats() {
   const ringDeg = Math.max(0, Math.min(360, Math.round((analytics.overallAccuracy / 100) * 360)))
 
   return (
-    <div className="min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)]">
-      <div className="mx-auto w-full max-w-6xl px-6 pb-16 pt-10">
-        <section className="relative overflow-hidden rounded-[24px] border border-[var(--border)] bg-[linear-gradient(130deg,var(--bg-surface)_0%,var(--accent-subtle)_100%)] p-8">
-          <div className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 rounded-full bg-[var(--accent)]/15 blur-2xl" />
-          <div className="pointer-events-none absolute -bottom-14 left-1/3 h-44 w-44 rounded-full bg-[var(--correct)]/10 blur-2xl" />
-          <div className="relative flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+    <div className="min-h-[100dvh] bg-[#FAF6ED] dark:bg-zinc-950 text-black dark:text-white pb-16">
+      {/* Floating Pill Capsule Header */}
+      <header className="sticky top-3 z-sticky px-4 sm:px-6">
+        <div className="mx-auto flex max-w-6xl items-center justify-between rounded-full border-2 border-black bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md px-5 py-2.5 shadow-[4px_4px_0px_#000000] dark:shadow-[4px_4px_0px_#3f3f46]">
+          <Link href="/" className="group flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-black bg-amber-400 text-black shadow-[2px_2px_0px_#000000] transition-transform group-hover:rotate-12">
+              <span className="font-fredoka text-sm font-black">N</span>
+            </div>
+            <span className="font-fredoka text-xl font-black tracking-tight text-black dark:text-white">
+              nexus<span className="text-amber-500">et</span>
+            </span>
+          </Link>
+
+          <div className="flex items-center gap-3">
+            <Link
+              href="/categories"
+              className="inline-flex items-center gap-1.5 rounded-full border-2 border-black bg-amber-400 px-4 py-1.5 font-fredoka text-xs font-black uppercase text-black shadow-[2px_2px_0px_#000000] hover:bg-amber-300 transition-all active:translate-x-[1px] active:translate-y-[1px]"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Practice Quests
+            </Link>
+            <ThemeToggle />
+          </div>
+        </div>
+      </header>
+
+      <main id="main" className="mx-auto w-full max-w-6xl px-4 sm:px-6 pt-6">
+        
+        {/* Hero Achievement Hub Card */}
+        <section className="relative overflow-hidden rounded-[32px] border-[2.5px] border-black bg-white dark:bg-zinc-900 p-6 sm:p-8 shadow-[6px_6px_0px_#000000] dark:shadow-[6px_6px_0px_#3f3f46]">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <p className="text-xs-label text-[var(--text-secondary)]">Performance Journal</p>
-              <h1 className="mt-2 text-3xl-display">
-                {username ? `${username}'s Progress` : "Your Progress"}
+              <div className="inline-flex items-center gap-1.5 rounded-full border-2 border-black bg-amber-400 px-3.5 py-1 text-xs font-black uppercase tracking-wider text-black shadow-[2px_2px_0px_#000000]">
+                <Trophy className="h-3.5 w-3.5" />
+                Spelling Trophy Room
+              </div>
+              <h1 className="mt-3 font-fredoka text-[clamp(2.2rem,4.5vw,3.2rem)] font-black text-black dark:text-white uppercase tracking-wide leading-tight">
+                {username ? `${username}'s Achievements` : "Spelling Journal"}
               </h1>
-              <p className="mt-2 max-w-xl text-base-body text-[var(--text-secondary)]">
-                Review accuracy, session intensity, and category depth from your saved practice history.
+              <p className="mt-1 font-fredoka text-base font-semibold text-zinc-600 dark:text-zinc-300">
+                Track your active streaks, accuracy milestones, and category mastery over time!
               </p>
             </div>
+
             <div className="flex flex-wrap items-center gap-3">
               <Link href="/categories">
-                <Button variant="secondary" className="h-11 rounded-[10px] px-6">
-                  <ArrowLeft className="h-4 w-4" /> Back
-                </Button>
-              </Link>
-              <Link href="/categories">
-                <Button variant="primary" className="h-11 rounded-[10px] px-6">
-                  Start Another Session <ArrowRight className="ml-2 h-4 w-4" />
+                <Button variant="primary" className="h-12 px-7 text-sm font-black shadow-[3px_3px_0px_#000000]">
+                  Start Another Quest <ArrowRight className="ml-1.5 h-4 w-4" />
                 </Button>
               </Link>
             </div>
           </div>
-          <div className="relative mt-8 grid gap-6 border-t border-[var(--border)]/70 pt-6 sm:grid-cols-2 lg:grid-cols-4">
-            <div>
-              <p className="text-xs-label text-[var(--text-muted)]">Sessions</p>
-              <p className="mt-2 font-display text-[2rem] leading-none">{analytics.totalSessions}</p>
+
+          {/* 4 Chunky Pill Stat Blocks (Matching Reference Screenshot Style) */}
+          <div className="relative mt-8 grid gap-4 border-t-2 border-black/10 dark:border-white/10 pt-6 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="rounded-2xl border-2 border-black bg-emerald-300 p-4 shadow-[3px_3px_0px_#000000]">
+              <span className="font-fredoka text-xs font-black uppercase text-black">Active Streak</span>
+              <p className="mt-1 flex items-center gap-2 font-fredoka text-3xl font-black text-black">
+                <Flame className="h-7 w-7 text-amber-700 fill-amber-500 animate-pulse" />
+                {analytics.streak} {analytics.streak === 1 ? "Day" : "Days"}
+              </p>
             </div>
-            <div>
-              <p className="text-xs-label text-[var(--text-muted)]">Focus Time</p>
-              <p className="mt-2 font-display text-[2rem] leading-none">{formatDurationFromMinutes(analytics.totalMinutes)}</p>
+
+            <div className="rounded-2xl border-2 border-black bg-amber-300 p-4 shadow-[3px_3px_0px_#000000]">
+              <span className="font-fredoka text-xs font-black uppercase text-black">Overall Accuracy</span>
+              <p className="mt-1 font-fredoka text-3xl font-black text-black">
+                {analytics.overallAccuracy}%
+              </p>
             </div>
-            <div>
-              <p className="text-xs-label text-[var(--text-muted)]">Questions Solved</p>
-              <p className="mt-2 font-display text-[2rem] leading-none">{analytics.totalQuestions}</p>
+
+            <div className="rounded-2xl border-2 border-black bg-sky-300 p-4 shadow-[3px_3px_0px_#000000]">
+              <span className="font-fredoka text-xs font-black uppercase text-black">Words Mastered</span>
+              <p className="mt-1 font-fredoka text-3xl font-black text-black">
+                {analytics.totalQuestions}
+              </p>
             </div>
-            <div>
-              <p className="text-xs-label text-[var(--text-muted)]">Daily Streak</p>
-              <p className="mt-2 flex items-center gap-2 font-display text-[2rem] leading-none">
-                <Flame className="h-7 w-7 text-[var(--accent)]" />
-                {analytics.streak}
+
+            <div className="rounded-2xl border-2 border-black bg-purple-300 p-4 shadow-[3px_3px_0px_#000000]">
+              <span className="font-fredoka text-xs font-black uppercase text-black">Practice Time</span>
+              <p className="mt-1 font-fredoka text-3xl font-black text-black">
+                {formatDurationFromMinutes(analytics.totalMinutes)}
               </p>
             </div>
           </div>
@@ -271,100 +307,127 @@ export default function Stats() {
 
         {loading && (
           <section className="py-16 text-center">
-            <ShimmerText text="Loading your stats..." className="text-2xl" />
+            <ShimmerText text="Loading your trophies & quests..." className="font-fredoka text-2xl font-black" />
           </section>
         )}
 
         {!loading && !hasData && (
-          <section className="mt-12 rounded-[20px] border border-dashed border-[var(--border-strong)] bg-[var(--bg-surface)] p-12 text-center">
-            <CalendarDays className="mx-auto h-8 w-8 text-[var(--text-muted)]" />
-            <h2 className="mt-4 text-2xl-display">No Saved Sessions Yet</h2>
-            <p className="mx-auto mt-2 max-w-lg text-base-body text-[var(--text-secondary)]">
-              Complete a category session to start building your learning timeline and performance visuals.
+          <section className="mt-8 rounded-[32px] border-[2.5px] border-black bg-white dark:bg-zinc-900 p-12 text-center shadow-[5px_5px_0px_#000000]">
+            <CalendarDays className="mx-auto h-12 w-12 text-amber-500" />
+            <h2 className="mt-4 font-fredoka text-2xl sm:text-3xl font-black text-black dark:text-white uppercase">
+              No Quests Completed Yet!
+            </h2>
+            <p className="mx-auto mt-2 max-w-md font-fredoka text-base font-semibold text-zinc-600 dark:text-zinc-300">
+              Jump into any category, spell a few words, and watch your badges and stats come alive here!
             </p>
+            <div className="mt-6">
+              <Link href="/categories">
+                <Button variant="primary" className="h-11 px-8 text-sm font-black shadow-[3px_3px_0px_#000000]">
+                  Start First Quest 🚀
+                </Button>
+              </Link>
+            </div>
           </section>
         )}
 
         {!loading && hasData && (
           <>
-            <section className="mt-10 grid gap-8 lg:grid-cols-[2fr_1fr]">
-              <div className="rounded-[20px] border border-[var(--border)] bg-[var(--bg-surface)] p-6">
-                <div className="mb-5 flex items-center justify-between">
+            {/* 2-Column Section: 14-Day Activity Wave & Precision Dial */}
+            <section className="mt-8 grid gap-8 lg:grid-cols-[2fr_1fr]">
+              <div className="rounded-[32px] border-[2.5px] border-black bg-white dark:bg-zinc-900 p-6 sm:p-7 shadow-[5px_5px_0px_#000000] dark:shadow-[5px_5px_0px_#3f3f46]">
+                <div className="mb-4 flex items-center justify-between">
                   <div>
-                    <p className="text-xs-label text-[var(--text-muted)]">Last 14 Days</p>
-                    <h2 className="text-xl-ui">Activity Wave</h2>
+                    <span className="rounded-full border border-black bg-amber-400 px-2.5 py-0.5 font-fredoka text-[10px] font-black uppercase text-black">
+                      Activity Wave
+                    </span>
+                    <h2 className="mt-1.5 font-fredoka text-2xl font-black text-black dark:text-white uppercase">
+                      Practice Intensity
+                    </h2>
                   </div>
-                  <p className="text-sm-body text-[var(--text-secondary)]">Time per day</p>
+                  <p className="font-fredoka text-xs font-bold text-zinc-500">Last 14 Days</p>
                 </div>
-                <svg viewBox="0 0 560 150" className="w-full">
-                  <defs>
-                    <linearGradient id="waveFill" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="var(--accent)" stopOpacity="0.35" />
-                      <stop offset="100%" stopColor="var(--accent)" stopOpacity="0.03" />
-                    </linearGradient>
-                  </defs>
-                  <path d={`M 0 120 ${analytics.sparklinePath} L 560 120`} fill="url(#waveFill)" />
-                  <path d={analytics.sparklinePath} fill="none" stroke="var(--accent)" strokeWidth="3" strokeLinecap="round" />
-                </svg>
-                <div className="mt-3 grid grid-cols-7 gap-2 text-center">
+
+                <div className="rounded-2xl border-2 border-black bg-[#FAF6ED] dark:bg-zinc-800 p-4 shadow-[2px_2px_0px_#000000]">
+                  <svg viewBox="0 0 560 140" className="w-full">
+                    <defs>
+                      <linearGradient id="waveFill" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#F59E0B" stopOpacity="0.45" />
+                        <stop offset="100%" stopColor="#F59E0B" stopOpacity="0.05" />
+                      </linearGradient>
+                    </defs>
+                    <path d={`M 0 120 ${analytics.sparklinePath} L 560 120`} fill="url(#waveFill)" />
+                    <path d={analytics.sparklinePath} fill="none" stroke="#F59E0B" strokeWidth="4" strokeLinecap="round" />
+                  </svg>
+                </div>
+
+                <div className="mt-4 grid grid-cols-7 gap-2 text-center">
                   {analytics.daily.slice(-7).map((day) => (
-                    <div key={day.key}>
-                      <p className="text-xs-label text-[var(--text-muted)]">{day.label}</p>
-                      <p className="text-sm-body text-[var(--text-secondary)]">{formatDurationFromMinutes(day.minutes)}</p>
+                    <div key={day.key} className="rounded-xl border border-black bg-white dark:bg-zinc-800 p-2 shadow-[1px_1px_0px_#000000]">
+                      <p className="font-fredoka text-[11px] font-black uppercase text-zinc-500">{day.label}</p>
+                      <p className="font-fredoka text-xs font-black text-black dark:text-white">{formatDurationFromMinutes(day.minutes)}</p>
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div className="flex flex-col justify-between rounded-[20px] border border-[var(--border)] bg-[var(--bg-surface)] p-6">
+              {/* Precision Dial */}
+              <div className="flex flex-col justify-between rounded-[32px] border-[2.5px] border-black bg-white dark:bg-zinc-900 p-6 sm:p-7 shadow-[5px_5px_0px_#000000] dark:shadow-[5px_5px_0px_#3f3f46]">
                 <div>
-                  <p className="text-xs-label text-[var(--text-muted)]">Overall Accuracy</p>
-                  <h2 className="text-xl-ui">Precision Dial</h2>
+                  <span className="rounded-full border border-black bg-emerald-300 px-2.5 py-0.5 font-fredoka text-[10px] font-black uppercase text-black">
+                    Accuracy Meter
+                  </span>
+                  <h2 className="mt-1.5 font-fredoka text-2xl font-black text-black dark:text-white uppercase">
+                    Precision Dial
+                  </h2>
                 </div>
-                <div className="mx-auto mt-4 grid h-44 w-44 place-items-center rounded-full" style={{ background: `conic-gradient(var(--correct) ${ringDeg}deg, var(--bg-elevated) ${ringDeg}deg)` }}>
-                  <div className="grid h-32 w-32 place-items-center rounded-full bg-[var(--bg-surface)]">
-                    <p className="font-display text-[2.2rem] leading-none">{analytics.overallAccuracy}%</p>
+
+                <div className="mx-auto my-4 grid h-44 w-44 place-items-center rounded-full border-4 border-black shadow-[4px_4px_0px_#000000]" style={{ background: `conic-gradient(#10B981 ${ringDeg}deg, #F3EBD8 ${ringDeg}deg)` }}>
+                  <div className="grid h-32 w-32 place-items-center rounded-full border-2 border-black bg-white dark:bg-zinc-800">
+                    <p className="font-fredoka text-3xl font-black text-black dark:text-white">{analytics.overallAccuracy}%</p>
                   </div>
                 </div>
-                <div className="mt-4 space-y-2">
-                  <p className="flex items-center justify-between text-sm-body text-[var(--text-secondary)]">
-                    <span className="inline-flex items-center gap-2">
-                      <Trophy className="h-4 w-4 text-[var(--accent)]" />
-                      Best Session
+
+                <div className="space-y-2 rounded-2xl border-2 border-black bg-[#FAF6ED] dark:bg-zinc-800 p-3.5 shadow-[2px_2px_0px_#000000]">
+                  <div className="flex items-center justify-between font-fredoka text-xs font-bold">
+                    <span className="inline-flex items-center gap-1.5">
+                      <Trophy className="h-4 w-4 text-amber-500" />
+                      Best Run:
                     </span>
-                    <span>{analytics.bestAccuracy}%</span>
-                  </p>
-                  <p className="flex items-center justify-between text-sm-body text-[var(--text-secondary)]">
-                    <span className="inline-flex items-center gap-2">
-                      <Clock3 className="h-4 w-4 text-[var(--accent)]" />
-                      Avg Session Time
+                    <span className="font-black text-emerald-600 dark:text-emerald-400">{analytics.bestAccuracy}%</span>
+                  </div>
+                  <div className="flex items-center justify-between font-fredoka text-xs font-bold">
+                    <span className="inline-flex items-center gap-1.5">
+                      <Clock3 className="h-4 w-4 text-amber-500" />
+                      Average Session:
                     </span>
-                    <span>{formatDurationFromMinutes(analytics.avgMinutes)}</span>
-                  </p>
+                    <span className="font-black">{formatDurationFromMinutes(analytics.avgMinutes)}</span>
+                  </div>
                 </div>
               </div>
             </section>
 
-            <section className="mt-10 grid gap-10 lg:grid-cols-[1.4fr_1fr]">
-              <div>
-                <div className="mb-4 flex items-end justify-between">
-                  <h3 className="text-xl-ui">Category Strength</h3>
-                  <p className="text-sm-body text-[var(--text-secondary)]">Accuracy and minutes by category</p>
-                </div>
-                <div className="space-y-4">
+            {/* Category Strength & Weekly Pattern */}
+            <section className="mt-8 grid gap-8 lg:grid-cols-[1.4fr_1fr]">
+              <div className="rounded-[32px] border-[2.5px] border-black bg-white dark:bg-zinc-900 p-6 sm:p-7 shadow-[5px_5px_0px_#000000] dark:shadow-[5px_5px_0px_#3f3f46]">
+                <h3 className="font-fredoka text-2xl font-black text-black dark:text-white uppercase">
+                  Category Mastery
+                </h3>
+                <p className="mt-1 font-fredoka text-xs font-bold text-zinc-500">Words learned across subjects</p>
+
+                <div className="mt-5 space-y-4">
                   {analytics.categories.slice(0, 6).map((category) => {
                     const width = Math.max(8, category.accuracy)
                     return (
-                      <div key={category.name}>
-                        <div className="mb-1 flex items-center justify-between">
-                          <p className="text-base-body capitalize">{category.name}</p>
-                          <p className="text-sm-body text-[var(--text-secondary)]">{category.accuracy}% accuracy</p>
+                      <div key={category.name} className="rounded-2xl border-2 border-black bg-[#FAF6ED] dark:bg-zinc-800 p-3.5 shadow-[2px_2px_0px_#000000]">
+                        <div className="flex items-center justify-between font-fredoka text-sm font-black capitalize">
+                          <span>{category.name}</span>
+                          <span className="text-amber-600 dark:text-amber-400">{category.accuracy}% Accuracy</span>
                         </div>
-                        <div className="h-2 rounded-full bg-[var(--bg-elevated)]">
-                          <div className="h-2 rounded-full bg-[var(--accent)]" style={{ width: `${width}%` }} />
+                        <div className="mt-2 h-3.5 w-full rounded-full border-2 border-black bg-zinc-200 overflow-hidden shadow-[1px_1px_0px_#000000]">
+                          <div className="h-full bg-amber-400" style={{ width: `${width}%` }} />
                         </div>
-                        <p className="mt-1 text-sm-body text-[var(--text-muted)]">
-                          {category.sessions} sessions • {formatDurationFromMinutes(category.minutes)}
+                        <p className="mt-1.5 font-fredoka text-xs font-bold text-zinc-600 dark:text-zinc-400">
+                          {category.sessions} Quests completed • {formatDurationFromMinutes(category.minutes)} practiced
                         </p>
                       </div>
                     )
@@ -372,58 +435,72 @@ export default function Stats() {
                 </div>
               </div>
 
-              <div className="rounded-[20px] border border-[var(--border)] bg-[var(--bg-surface)] p-6">
-                <h3 className="text-xl-ui">Difficulty Mix</h3>
-                <div className="mt-5 space-y-4">
-                  {analytics.difficulties.map((difficulty) => (
-                    <div key={difficulty.name}>
-                      <div className="mb-1 flex items-center justify-between">
-                        <p className="text-base-body capitalize">{difficulty.name}</p>
-                        <p className="text-sm-body text-[var(--text-secondary)]">{difficulty.share}%</p>
-                      </div>
-                      <div className="h-2 rounded-full bg-[var(--bg-elevated)]">
-                        <div
-                          className="h-2 rounded-full"
-                          style={{
-                            width: `${difficulty.share}%`,
-                            background: difficulty.name === "hard" ? "var(--wrong)" : difficulty.name === "medium" ? "var(--accent)" : "var(--correct)",
-                          }}
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
+              {/* Weekly Pattern Card */}
+              <div className="rounded-[32px] border-[2.5px] border-black bg-white dark:bg-zinc-900 p-6 sm:p-7 shadow-[5px_5px_0px_#000000] dark:shadow-[5px_5px_0px_#3f3f46]">
+                <h3 className="font-fredoka text-2xl font-black text-black dark:text-white uppercase">
+                  Weekly Habit
+                </h3>
+                <p className="mt-1 font-fredoka text-xs font-bold text-zinc-500">Minutes practiced per day</p>
 
-                <h4 className="mt-8 text-sm-body text-[var(--text-secondary)]">Weekly Minute Pattern</h4>
                 <WeekdayMinutesChart weekdayMinutes={analytics.weekdayMinutes} />
+
+                <div className="mt-6 border-t-2 border-black/10 dark:border-white/10 pt-4">
+                  <p className="font-fredoka text-xs font-black uppercase text-zinc-500 mb-2">Challenge Mix</p>
+                  <div className="grid grid-cols-3 gap-2">
+                    {analytics.difficulties.map((diff) => (
+                      <div key={diff.name} className="rounded-xl border-2 border-black bg-[#FAF6ED] dark:bg-zinc-800 p-2 text-center shadow-[1px_1px_0px_#000000]">
+                        <p className="font-fredoka text-[10px] font-black uppercase text-zinc-500">{diff.name}</p>
+                        <p className="font-fredoka text-base font-black">{diff.share}%</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             </section>
 
-            <section className="mt-12">
+            {/* Recent Sessions List */}
+            <section className="mt-8">
               <div className="mb-4 flex items-center justify-between">
-                <h3 className="text-xl-ui">Recent Sessions</h3>
-                <p className="text-sm-body text-[var(--text-secondary)]">Most recent completions</p>
+                <h3 className="font-fredoka text-2xl font-black text-black dark:text-white uppercase">
+                  Recent Quest Runs
+                </h3>
+                <p className="font-fredoka text-xs font-bold text-zinc-500">Last completions</p>
               </div>
+
               <div className="space-y-3">
                 {analytics.normalized.slice(0, 8).map((session) => (
-                  <div key={session.id} className="grid grid-cols-[1fr_auto_auto_auto] items-center gap-4 rounded-[12px] border border-[var(--border)] bg-[var(--bg-surface)] px-4 py-3">
+                  <div
+                    key={session.id}
+                    className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border-2 border-black bg-white dark:bg-zinc-900 px-5 py-3.5 shadow-[3px_3px_0px_#000000] hover:-translate-y-0.5 transition-transform"
+                  >
                     <div>
-                      <p className="text-base-body capitalize">{session.category}</p>
-                      <p className="text-sm-body text-[var(--text-secondary)]">{session.parsedDate.toLocaleString()}</p>
+                      <span className="font-fredoka text-base font-black capitalize text-black dark:text-white">
+                        {session.category} Quest
+                      </span>
+                      <p className="font-fredoka text-xs font-semibold text-zinc-500">
+                        {session.parsedDate.toLocaleDateString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
+                      </p>
                     </div>
-                    <p className="text-sm-body text-[var(--text-secondary)]">{session.correctAnswers}/{session.totalQuestions}</p>
-                    <p className="text-sm-body text-[var(--text-secondary)]">{formatDurationFromSeconds(session.timeSpentSeconds)}</p>
-                    <p className="inline-flex items-center gap-1 text-sm-body">
-                      <Target className="h-4 w-4 text-[var(--accent)]" />
-                      {session.accuracy}%
-                    </p>
+
+                    <div className="flex items-center gap-4">
+                      <span className="rounded-xl border-2 border-black bg-[#FAF6ED] dark:bg-zinc-800 px-3 py-1 font-fredoka text-xs font-black">
+                        {session.correctAnswers} / {session.totalQuestions} Words
+                      </span>
+                      <span className="rounded-xl border-2 border-black bg-amber-300 px-3 py-1 font-fredoka text-xs font-black text-black">
+                        {formatDurationFromSeconds(session.timeSpentSeconds)}
+                      </span>
+                      <span className="rounded-xl border-2 border-black bg-emerald-300 px-3 py-1 font-fredoka text-xs font-black text-black">
+                        {session.accuracy}%
+                      </span>
+                    </div>
                   </div>
                 ))}
               </div>
             </section>
           </>
         )}
-      </div>
+
+      </main>
     </div>
   )
 }

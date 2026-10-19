@@ -2,16 +2,16 @@
 
 import { useState } from "react"
 
-const WEEKDAY_SHORT = ["S", "M", "T", "W", "T", "F", "S"]
+const WEEKDAY_SHORT = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
 export default function WeekdayMinutesChart({ weekdayMinutes = [] }) {
   const [hoveredIndex, setHoveredIndex] = useState(null)
   const maxMinutes = Math.max(...weekdayMinutes, 1)
 
   return (
-    <div className="mt-3 flex items-end justify-between gap-2">
+    <div className="mt-4 flex items-end justify-between gap-2 sm:gap-3">
       {weekdayMinutes.map((minutes, index) => {
-        const barHeight = Math.max(10, Math.round((minutes / maxMinutes) * 80))
+        const barHeight = Math.max(8, Math.round((minutes / maxMinutes) * 80))
         const isHovered = hoveredIndex === index
 
         return (
@@ -22,20 +22,22 @@ export default function WeekdayMinutesChart({ weekdayMinutes = [] }) {
             onMouseLeave={() => setHoveredIndex(null)}
           >
             <div
-              className={`w-full rounded-[6px] bg-[var(--accent)]/15 transition-transform duration-150 ${isHovered ? "scale-[1.03]" : ""}`}
-              style={{ height: "84px", position: "relative" }}
+              className={`w-full rounded-2xl border-2 border-black bg-[#FAF6ED] dark:bg-zinc-800 transition-transform ${isHovered ? "scale-105" : ""} shadow-[1px_1px_0px_#000000]`}
+              style={{ height: "90px", position: "relative", overflow: "hidden" }}
             >
               <div
-                className={`absolute bottom-0 w-full rounded-[6px] bg-[var(--accent)] transition-all duration-150 ${isHovered ? "brightness-110" : ""}`}
+                className={`absolute bottom-0 w-full bg-amber-400 border-t-2 border-black transition-all duration-200 ${isHovered ? "bg-amber-300" : ""}`}
                 style={{ height: `${barHeight}px` }}
               />
               <div
-                className={`pointer-events-none absolute -top-9 left-1/2 -translate-x-1/2 rounded-[6px] border border-[var(--border)] bg-[var(--bg-surface)] px-2 py-1 text-xs font-medium text-[var(--text-primary)] shadow-sm transition-all duration-150 ${isHovered ? "translate-y-0 opacity-100" : "translate-y-1 opacity-0"}`}
+                className={`pointer-events-none absolute -top-10 left-1/2 -translate-x-1/2 z-20 whitespace-nowrap rounded-xl border-2 border-black bg-white dark:bg-zinc-900 px-2.5 py-1 font-fredoka text-[11px] font-black text-black dark:text-white shadow-[2px_2px_0px_#000000] transition-all duration-150 ${isHovered ? "opacity-100 scale-100" : "opacity-0 scale-95"}`}
               >
-                {minutes.toFixed(2)} min
+                {minutes.toFixed(1)} mins
               </div>
             </div>
-            <span className="text-xs-label text-[var(--text-muted)]">{WEEKDAY_SHORT[index]}</span>
+            <span className="font-fredoka text-[11px] font-black uppercase text-zinc-600 dark:text-zinc-400">
+              {WEEKDAY_SHORT[index]}
+            </span>
           </div>
         )
       })}
