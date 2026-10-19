@@ -1,90 +1,100 @@
 "use client"
 
-import { motion } from "framer-motion"
-import { BarChart3, BookOpen, LayoutGrid, Timer } from "lucide-react"
-import FeatureCard from "./FeatureCard"
+import { BookOpen, LayoutGrid, Timer, BarChart3 } from "lucide-react"
 
-const SECTION_EMPHASIS = "actually"
-
-const FEATURES_LEFT = [
+const FEATURES = [
   {
+    step: "POWER 01",
+    tagColor: "bg-emerald-300",
+    iconBg: "bg-emerald-400",
     title: "Definition-first spelling",
     description:
-      "They do not see the word first. They see the meaning and have to build it. That active recall makes the spelling stick.",
-    icon: <BookOpen className="h-7 w-7" />,
-    tone: "amber",
-    ghostLetter: "A",
+      "Learners hear crystal clear pronunciation and read definitions before building words letter-by-letter. Active recall anchors spelling permanently.",
+    icon: <BookOpen className="h-6 w-6 text-black" strokeWidth={2.5} />,
+    span: "md:col-span-7",
   },
   {
+    step: "POWER 02",
+    tagColor: "bg-amber-300",
+    iconBg: "bg-amber-400",
     title: "Curated word categories",
     description:
-      "Animals, Science, Geography and more. The sets are focused, so kids build real vocabulary instead of guessing random lists.",
-    icon: <LayoutGrid className="h-7 w-7" />,
-    tone: "green",
-    ghostLetter: "Z",
-  },
-]
-
-const FEATURES_RIGHT = [
-  {
-    title: "Timed sessions",
-    description:
-      "Set a timer when you want energy and pace. Keep it open when you want calm and focus. Both modes work.",
-    icon: <Timer className="h-7 w-7" />,
-    tone: "amber",
+      "Animals, Science, Geography, Math, and English. Structured word sets thoughtfully tailored for real grade levels.",
+    icon: <LayoutGrid className="h-6 w-6 text-black" strokeWidth={2.5} />,
+    span: "md:col-span-5",
   },
   {
-    title: "Progress monitoring",
+    step: "POWER 03",
+    tagColor: "bg-sky-300",
+    iconBg: "bg-sky-400",
+    title: "Flexible session pace",
     description:
-      "Track accuracy, session time, category strengths, and trends over time with clear visuals that guide what to practice next.",
-    icon: <BarChart3 className="h-7 w-7" />,
-    tone: "amber",
+      "Choose 10s, 15s, or 20s countdown timers for lively, high-energy practice, or pause anytime for calm focus without pressure.",
+    icon: <Timer className="h-6 w-6 text-black" strokeWidth={2.5} />,
+    span: "md:col-span-5",
+  },
+  {
+    step: "POWER 04",
+    tagColor: "bg-purple-300",
+    iconBg: "bg-purple-400",
+    title: "Visual progress dials",
+    description:
+      "Monitor accuracy dials, 14-day activity streaks, and mastery charts across every practice run.",
+    icon: <BarChart3 className="h-6 w-6 text-black" strokeWidth={2.5} />,
+    span: "md:col-span-7",
   },
 ]
-
-const containerVariants = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.12 } },
-}
-
-const cardVariants = {
-  hidden: { opacity: 0, y: 32 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] },
-  },
-}
 
 export default function Features() {
   return (
-    <section id="features" className="bg-[var(--landing-section-alt)] py-20">
-      <div className="mx-auto max-w-6xl px-6">
-        <h2 className="max-w-2xl font-display text-[clamp(2.4rem,4vw,3.6rem)] font-light leading-tight text-[var(--landing-ink)]">
-          Everything you need to <span className="font-semibold italic">{SECTION_EMPHASIS}</span> learn
-        </h2>
+    <section id="features" className="py-20">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        
+        {/* Section Header */}
+        <div className="flex flex-col items-center text-center">
+          <div className="inline-flex items-center rounded-full border-2 border-black bg-amber-400 px-3.5 py-1 text-xs font-black uppercase tracking-wider text-black shadow-[2px_2px_0px_#000000]">
+            Core Superpowers
+          </div>
 
-        <motion.div
-          className="mt-12 grid items-stretch gap-6 md:grid-cols-2"
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.2 }}
-        >
-          {[...FEATURES_LEFT, ...FEATURES_RIGHT].map((feature) => (
-            <motion.div key={feature.title} variants={cardVariants}>
-              <FeatureCard
-                title={feature.title}
-                description={feature.description}
-                icon={feature.icon}
-                tone={feature.tone}
-                size={feature.ghostLetter ? "large" : "small"}
-                ghostLetter={feature.ghostLetter}
-                className="min-h-[260px]"
-              />
-            </motion.div>
+          <h2 className="mt-4 font-fredoka text-[clamp(2.2rem,5vw,3.5rem)] font-black uppercase tracking-wide text-black dark:text-white drop-shadow-[2px_2px_0px_#f59e0b]">
+            Designed for joyful, focused learning
+          </h2>
+          <p className="mt-2.5 max-w-xl font-fredoka text-base font-bold text-black/70 dark:text-zinc-300">
+            Every feature is crafted to make practicing spelling feel like an exciting adventure rather than a chore.
+          </p>
+        </div>
+
+        {/* Feature Cards Grid (Comic Panels) */}
+        <div className="mt-12 grid items-stretch gap-6 md:grid-cols-12">
+          {FEATURES.map((feature) => (
+            <div
+              key={feature.title}
+              className={`flex flex-col justify-between rounded-[28px] border-[2.5px] border-black bg-white dark:bg-zinc-900 p-6 sm:p-7 shadow-[5px_5px_0px_#000000] dark:shadow-[5px_5px_0px_#3f3f46] transition-all hover:-translate-y-1 hover:shadow-[7px_7px_0px_#000000] ${feature.span}`}
+            >
+              <div>
+                <div className="flex items-center justify-between">
+                  {/* Icon badge */}
+                  <div className={`flex h-12 w-12 items-center justify-center rounded-2xl border-2 border-black ${feature.iconBg} shadow-[2px_2px_0px_#000000]`}>
+                    {feature.icon}
+                  </div>
+
+                  {/* Comic Step Badge */}
+                  <span className={`rounded-full border-2 border-black ${feature.tagColor} px-3 py-0.5 font-fredoka text-[11px] font-black uppercase text-black shadow-[2px_2px_0px_#000000]`}>
+                    {feature.step}
+                  </span>
+                </div>
+
+                <h3 className="mt-5 font-fredoka text-xl sm:text-2xl font-black text-black dark:text-white">
+                  {feature.title}
+                </h3>
+                <p className="mt-2.5 font-fredoka text-sm font-semibold text-zinc-700 dark:text-zinc-300 leading-relaxed">
+                  {feature.description}
+                </p>
+              </div>
+            </div>
           ))}
-        </motion.div>
+        </div>
+
       </div>
     </section>
   )

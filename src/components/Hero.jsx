@@ -1,184 +1,256 @@
 "use client"
 
-import { motion } from "framer-motion"
+import { useState } from "react"
+import { motion } from "motion/react"
 import Link from "next/link"
+import { Volume2, CheckCircle2, RotateCcw, ArrowRight } from "lucide-react"
+import { LeftMascot, RightMascot } from "./HeroMascots"
 
-const HERO_HEADLINE = ["Learn every", "word like a", "champion."]
-const HERO_SUBHEAD =
-  "Hear the word, spell it with focus, and watch progress build in every session."
-const CTA_PRIMARY = "Create an account"
-const CTA_SECONDARY = "Login"
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
-  visible: (delay) => ({
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6, delay, ease: [0.25, 0.46, 0.45, 0.94] },
-  }),
-}
-
-const letterBoxes = [
-  { letter: "S", position: "left-4 top-12", duration: 3.2, state: "default" },
-  { letter: "P", position: "left-20 top-28", duration: 2.8, state: "correct" },
-  { letter: "A", position: "left-40 top-10", duration: 3.4, state: "focus" },
-  { letter: "R", position: "left-60 top-32", duration: 2.6, state: "default" },
-  { letter: "K", position: "left-80 top-16", duration: 3.1, state: "default" },
-]
-
-const starPositions = [
-  { position: "left-10 top-6", delay: 0 },
-  { position: "right-6 top-16", delay: 0.6 },
-  { position: "left-24 bottom-10", delay: 0.3 },
-]
-
-const circleShapes = [
-  { size: "h-40 w-40", position: "left-10 top-10" },
-  { size: "h-52 w-52", position: "right-4 top-32" },
-  { size: "h-28 w-28", position: "left-24 bottom-8" },
-]
+// Word for the interactive hero mini-challenge
+const SAMPLE_WORD = "GIRAFFE"
+const SAMPLE_CLUE = "The tallest gentle animal on the African savanna 🦒"
+const SCRAMBLED_LETTERS = ["G", "I", "R", "A", "F", "F", "E", "P", "S"]
 
 export default function Hero() {
+  const [typedLetters, setTypedLetters] = useState([])
+  const [isWordComplete, setIsWordComplete] = useState(false)
+  const [isSpeaking, setIsSpeaking] = useState(false)
+
+  // Speech synthesizer for hearing the word
+  const speakWord = () => {
+    if (typeof window !== "undefined" && "speechSynthesis" in window) {
+      window.speechSynthesis.cancel()
+      const utterance = new SpeechSynthesisUtterance("Giraffe. Can you spell Giraffe?")
+      utterance.rate = 0.9
+      utterance.pitch = 1.15
+      utterance.onstart = () => setIsSpeaking(true)
+      utterance.onend = () => setIsSpeaking(false)
+      window.speechSynthesis.speak(utterance)
+    }
+  }
+
+  const handleLetterClick = (letter) => {
+    if (isWordComplete) return
+    const nextLetters = [...typedLetters, letter]
+    setTypedLetters(nextLetters)
+
+    if (nextLetters.join("") === SAMPLE_WORD) {
+      setIsWordComplete(true)
+      if (typeof window !== "undefined" && "speechSynthesis" in window) {
+        const cheer = new SpeechSynthesisUtterance("Super job! You spelled Giraffe correctly!")
+        cheer.rate = 1.0
+        cheer.pitch = 1.2
+        window.speechSynthesis.speak(cheer)
+      }
+    }
+  }
+
+  const handleReset = () => {
+    setTypedLetters([])
+    setIsWordComplete(false)
+  }
+
   return (
-    <section className="relative flex min-h-[100dvh] items-center overflow-hidden bg-[var(--landing-section-alt)]">
-      <div className="relative mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-12 px-6 pb-16 lg:grid-cols-[1.1fr_0.9fr]">
-        <div className="relative z-10 flex flex-col gap-6">
-          <div className="space-y-2">
-            {HERO_HEADLINE.map((line, index) => (
-              <motion.h1
-                key={line}
-                className="font-display text-[clamp(3rem,7vw,5.5rem)] font-light leading-[1.1] text-[var(--landing-ink)]"
-                variants={fadeUp}
-                initial="hidden"
-                animate="visible"
-                custom={0.1 + index * 0.1}
-              >
-                {line === "champion." ? (
-                  <span className="relative inline-block font-display font-semibold italic">
-                    {line}
-                    <motion.svg
-                      className="absolute -bottom-3 left-0 h-3 w-full"
-                      viewBox="0 0 180 16"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <motion.path
-                        d="M2 10 C30 2, 60 18, 90 10 C120 2, 150 18, 178 10"
-                        stroke="var(--landing-amber)"
-                        strokeWidth="3"
-                        strokeLinecap="round"
-                        initial={{ pathLength: 0 }}
-                        animate={{ pathLength: 1 }}
-                        transition={{ duration: 0.8, delay: 0.5 }}
-                      />
-                    </motion.svg>
-                  </span>
-                ) : (
-                  line
-                )}
-              </motion.h1>
-            ))}
-          </div>
+    <section className="relative overflow-hidden pt-6 pb-16 lg:py-16">
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
+        
+        {/* Main Title & Subtitle */}
+        <div className="mx-auto max-w-3xl text-center">
+          <motion.h1
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="font-fredoka text-[clamp(2.6rem,7vw,5rem)] font-black uppercase tracking-wider text-black dark:text-white drop-shadow-[3px_3px_0px_#f59e0b] sm:drop-shadow-[4px_4px_0px_#f59e0b] leading-none"
+          >
+            Nexuset Spelling
+          </motion.h1>
 
           <motion.p
-            className="max-w-[420px] text-lg leading-[1.7] text-[var(--text-secondary)]"
-            variants={fadeUp}
-            initial="hidden"
-            animate="visible"
-            custom={0.3}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="mx-auto mt-4 max-w-xl font-fredoka text-base sm:text-lg font-bold text-black/80 dark:text-zinc-200 leading-snug"
           >
-            {HERO_SUBHEAD}
+            Welcome to Nexuset — the magical &amp; playful sound-first spelling quest for curious young minds!
           </motion.p>
+        </div>
 
+        {/* 3-Column Hero Layout: Mascot Left | Central Quest Card | Mascot Right */}
+        <div className="mt-8 flex flex-col items-center justify-center gap-8 lg:flex-row lg:items-start lg:gap-6 xl:gap-12">
+          
+          {/* Left Mascot Column (Hidden on tiny screens, visible on md+) */}
+          <div className="order-2 lg:order-1 flex justify-center lg:pt-10">
+            <LeftMascot />
+          </div>
+
+          {/* Central Quest Card (Inspired directly by reference screenshot) */}
           <motion.div
-            className="flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center sm:justify-start sm:gap-4"
-            variants={fadeUp}
-            initial="hidden"
-            animate="visible"
-            custom={0.45}
+            initial={{ opacity: 0, scale: 0.96, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.55, delay: 0.15 }}
+            className="order-1 lg:order-2 w-full max-w-[430px] rounded-[32px] border-[2.5px] border-black bg-white dark:bg-zinc-900 p-5 sm:p-6 shadow-[6px_6px_0px_#000000] dark:shadow-[6px_6px_0px_#3f3f46]"
           >
-            <Link href="/sign-up" className="flex w-full sm:w-auto">
-              <motion.span
-                whileTap={{ scale: 0.96 }}
-                className="flex h-12 w-full items-center justify-center rounded-[10px] bg-[var(--landing-amber)] px-8 text-base font-medium text-white shadow-sm transition-all hover:-translate-y-[1px] hover:shadow-[0_8px_18px_rgba(217,119,87,0.35)] hover:brightness-[1.04] sm:w-[220px]"
-              >
-                {CTA_PRIMARY}
-              </motion.span>
-            </Link>
-            <Link href="/login" className="flex w-full sm:w-auto">
-              <motion.span
-              whileTap={{ scale: 0.96 }}
-              className="flex h-12 w-full items-center justify-center rounded-[10px] border border-[var(--border)] px-8 text-base font-medium text-[var(--text-primary)] transition-all hover:-translate-y-[1px] hover:border-[var(--border-strong)] hover:bg-[var(--bg-elevated)] sm:w-[220px]"
+            {/* Top Subcard: Quest Title & 4 Pill Stat Boxes */}
+            <div className="rounded-2xl border-2 border-black bg-[#FAF6ED] dark:bg-zinc-800 p-4 shadow-[2px_2px_0px_#000000]">
+              <div className="flex items-center justify-between">
+                <span className="font-fredoka text-xs font-black uppercase tracking-wider text-black dark:text-white">
+                  Daily Word Quest
+                </span>
+                <span className="inline-flex items-center gap-1 rounded-full border border-black bg-emerald-300 px-2 py-0.5 text-[10px] font-black uppercase text-black">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-600 animate-pulse" />
+                  Active
+                </span>
+              </div>
+
+              {/* 4 Pill Boxes like screenshot countdown */}
+              <div className="mt-3 grid grid-cols-4 gap-2">
+                <div className="rounded-xl border-2 border-black bg-white dark:bg-zinc-900 p-2 text-center shadow-[2px_2px_0px_#000000]">
+                  <p className="font-fredoka text-base sm:text-lg font-black text-black dark:text-white leading-none">
+                    07
+                  </p>
+                  <p className="mt-1 text-[9px] font-black uppercase text-zinc-600 dark:text-zinc-400">
+                    Streak
+                  </p>
+                </div>
+                <div className="rounded-xl border-2 border-black bg-white dark:bg-zinc-900 p-2 text-center shadow-[2px_2px_0px_#000000]">
+                  <p className="font-fredoka text-base sm:text-lg font-black text-black dark:text-white leading-none">
+                    15m
+                  </p>
+                  <p className="mt-1 text-[9px] font-black uppercase text-zinc-600 dark:text-zinc-400">
+                    Daily
+                  </p>
+                </div>
+                <div className="rounded-xl border-2 border-black bg-white dark:bg-zinc-900 p-2 text-center shadow-[2px_2px_0px_#000000]">
+                  <p className="font-fredoka text-base sm:text-lg font-black text-black dark:text-white leading-none">
+                    50K
+                  </p>
+                  <p className="mt-1 text-[9px] font-black uppercase text-zinc-600 dark:text-zinc-400">
+                    Words
+                  </p>
+                </div>
+                <div className="rounded-xl border-2 border-black bg-white dark:bg-zinc-900 p-2 text-center shadow-[2px_2px_0px_#000000]">
+                  <p className="font-fredoka text-base sm:text-lg font-black text-amber-500 leading-none">
+                    4.9★
+                  </p>
+                  <p className="mt-1 text-[9px] font-black uppercase text-zinc-600 dark:text-zinc-400">
+                    Rating
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Interactive Mini-Spelling Playground */}
+            <div className="mt-5 space-y-3">
+              <div className="flex items-center justify-between">
+                <p className="font-fredoka text-xs font-bold text-black/70 dark:text-zinc-300">
+                  Hear &amp; Spell Quick Word:
+                </p>
+                <button
+                  type="button"
+                  onClick={speakWord}
+                  className="inline-flex items-center gap-1.5 rounded-full border-2 border-black bg-amber-400 px-3 py-1 font-fredoka text-xs font-bold text-black shadow-[2px_2px_0px_#000000] hover:bg-amber-300 active:translate-x-[1px] active:translate-y-[1px]"
+                >
+                  <Volume2 className={`h-3.5 w-3.5 ${isSpeaking ? "animate-spin" : ""}`} />
+                  Pronounce
+                </button>
+              </div>
+
+              {/* Clue description */}
+              <div className="rounded-xl border-2 border-black bg-white dark:bg-zinc-800 p-2.5 text-xs font-bold text-zinc-800 dark:text-zinc-200 shadow-[2px_2px_0px_#000000]">
+                {SAMPLE_CLUE}
+              </div>
+
+              {/* Word Letter Slots */}
+              <div className="flex items-center justify-center gap-1.5 py-1">
+                {SAMPLE_WORD.split("").map((targetChar, index) => {
+                  const typed = typedLetters[index]
+                  const isMatch = typed === targetChar
+                  return (
+                    <div
+                      key={index}
+                      className={`flex h-10 w-9 sm:h-11 sm:w-10 items-center justify-center rounded-xl border-2 border-black font-fredoka text-base sm:text-lg font-black shadow-[2px_2px_0px_#000000] transition-transform ${
+                        typed
+                          ? isMatch
+                            ? "bg-emerald-300 text-black scale-105"
+                            : "bg-rose-300 text-black"
+                          : "bg-[#FAF6ED] dark:bg-zinc-800 text-zinc-400"
+                      }`}
+                    >
+                      {typed || "_"}
+                    </div>
+                  )
+                })}
+              </div>
+
+              {/* Scrambled Clickable Letter Chips */}
+              <div className="flex flex-wrap items-center justify-center gap-1.5 pt-1">
+                {SCRAMBLED_LETTERS.map((letter, idx) => (
+                  <button
+                    key={`${letter}-${idx}`}
+                    type="button"
+                    onClick={() => handleLetterClick(letter)}
+                    disabled={isWordComplete}
+                    className="flex h-8 w-8 items-center justify-center rounded-lg border-2 border-black bg-white dark:bg-zinc-800 font-fredoka text-sm font-black text-black dark:text-white shadow-[2px_2px_0px_#000000] transition-all hover:bg-amber-300 active:translate-x-[1px] active:translate-y-[1px] disabled:opacity-50"
+                  >
+                    {letter}
+                  </button>
+                ))}
+                {typedLetters.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={handleReset}
+                    title="Reset word"
+                    className="flex h-8 w-8 items-center justify-center rounded-lg border-2 border-black bg-zinc-200 text-black shadow-[2px_2px_0px_#000000]"
+                  >
+                    <RotateCcw className="h-3.5 w-3.5" />
+                  </button>
+                )}
+              </div>
+
+              {/* Success Badge */}
+              {isWordComplete && (
+                <motion.div
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  className="flex items-center justify-center gap-2 rounded-xl border-2 border-black bg-emerald-300 p-2 font-fredoka text-xs font-black text-black shadow-[2px_2px_0px_#000000]"
+                >
+                  <CheckCircle2 className="h-4 w-4" />
+                  Brilliant! You spelled it right! ⭐
+                </motion.div>
+              )}
+            </div>
+
+            {/* Divider with Center Badge */}
+            <div className="relative my-4 flex items-center justify-center">
+              <div className="w-full border-t-2 border-black dark:border-zinc-700" />
+              <div className="absolute flex h-7 w-7 items-center justify-center rounded-full border-2 border-black bg-amber-400 text-black shadow-[1px_1px_0px_#000000]">
+                <Volume2 className="h-3.5 w-3.5" />
+              </div>
+            </div>
+
+            {/* Big Bold Orange CTA Button (Matching Screenshot "Buy Now" button style) */}
+            <Link
+              href="/categories"
+              className="group flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-black bg-amber-400 py-3.5 px-6 font-fredoka text-base sm:text-lg font-black uppercase text-black shadow-[4px_4px_0px_#000000] transition-all hover:bg-amber-300 hover:shadow-[5px_5px_0px_#000000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_#000000]"
             >
-              {CTA_SECONDARY}
-              </motion.span>
+              Start Practice Adventure
+              <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
             </Link>
+
+            {/* Safety & Trust Note */}
+            <p className="mt-3 text-center font-fredoka text-[11px] font-bold text-zinc-600 dark:text-zinc-400">
+              ✓ 100% Free &amp; Kid Safe • No In-App Ads • Grade 1–8 Vocabulary
+            </p>
           </motion.div>
+
+          {/* Right Mascot Column */}
+          <div className="order-3 flex justify-center lg:pt-10">
+            <RightMascot />
+          </div>
 
         </div>
 
-        <motion.div
-          className="relative mx-auto hidden min-h-[320px] w-full max-w-[340px] lg:block lg:min-h-[420px] lg:max-w-none"
-          initial={{ opacity: 0, x: 40 }}
-          animate={{ opacity: 1, x: 0, transition: { duration: 0.8, delay: 0.2 } }}
-        >
-          <svg
-            className="absolute inset-0 h-full w-full text-[var(--landing-amber)] opacity-[0.04]"
-            viewBox="0 0 400 400"
-            aria-hidden
-          >
-            <defs>
-              <pattern id="dotGrid" width="18" height="18" patternUnits="userSpaceOnUse">
-                <circle cx="1.5" cy="1.5" r="1.5" fill="currentColor" />
-              </pattern>
-            </defs>
-            <rect width="400" height="400" fill="url(#dotGrid)" />
-          </svg>
-
-          {circleShapes.map((circle, index) => (
-            <motion.div
-              key={circle.position}
-              className={`absolute ${circle.size} ${circle.position} rounded-full bg-[var(--landing-amber)] opacity-[0.07]`}
-              animate={{ rotate: 360 }}
-              transition={{ duration: 20 + index * 6, repeat: Infinity, ease: "linear" }}
-            />
-          ))}
-
-          {starPositions.map((star) => (
-            <motion.span
-              key={star.position}
-              className={`absolute ${star.position} inline-block h-2 w-2 rounded-full bg-[var(--landing-amber)] opacity-70`}
-              animate={{ y: [-4, 6, -4] }}
-              transition={{ duration: 4, repeat: Infinity, delay: star.delay }}
-            />
-          ))}
-
-          <div className="absolute left-10 top-20 flex h-[280px] w-[320px] items-center justify-center">
-            {letterBoxes.map((box, index) => {
-              const baseClasses =
-                "absolute flex h-[60px] w-[52px] items-center justify-center rounded-[8px] border-2 bg-[var(--neutral-letter)] font-mono text-[1.5rem] font-medium text-[var(--text-primary)] shadow-[inset_0_1px_3px_rgba(0,0,0,0.06)]"
-              const stateClasses =
-                box.state === "correct"
-                  ? "border-[var(--correct-border)] bg-[var(--correct-bg)] text-[var(--correct)]"
-                  : box.state === "focus"
-                    ? "border-[var(--border-strong)] ring-2 ring-[var(--landing-amber)]"
-                    : "border-[var(--border)]"
-
-              return (
-                <motion.div
-                  key={box.letter}
-                  className={`${baseClasses} ${stateClasses} ${box.position}`}
-                  animate={{ y: [0, -8, 0] }}
-                  transition={{ duration: box.duration, repeat: Infinity, delay: index * 0.1 }}
-                >
-                  {box.letter}
-                </motion.div>
-              )
-            })}
-          </div>
-        </motion.div>
       </div>
-
     </section>
   )
 }

@@ -1,28 +1,46 @@
-"use client"
-
 import Link from "next/link"
+import { ArrowUp } from "lucide-react"
 
-const LOGO_PREFIX = "nexus"
-const LOGO_SUFFIX = "et"
-const FOOTER_COPY = "© 2025 nexuset. Made with care."
-const BACK_TO_TOP = "Back to top ↑"
+const LEGAL_LINKS = [
+  { label: "Privacy Policy", href: "/privacy" },
+  { label: "Terms of Service", href: "/terms" },
+]
 
 export default function Footer() {
   return (
-    <footer className="border-t border-[var(--border)] bg-[var(--landing-section-alt)]">
-      <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 py-8 text-sm text-[var(--text-muted)] md:flex-row">
-        <Link href="/" className="flex items-center text-[1.1rem] leading-none">
-          <span className="font-mono font-medium text-[var(--landing-amber)]">{LOGO_PREFIX}</span>
-          <span className="font-display font-semibold italic text-[var(--text-primary)]">
-            {LOGO_SUFFIX}
-          </span>
-        </Link>
-        <span>{FOOTER_COPY}</span>
-        <div className="flex items-center gap-4">
-          <Link href="#top" className="text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)]">
-            {BACK_TO_TOP}
+    <footer className="border-t-2 border-black/10 dark:border-white/10 bg-[#FAF6ED] dark:bg-zinc-950 text-black dark:text-white py-12">
+      <div className="mx-auto flex max-w-6xl flex-col items-center gap-6 px-4 sm:px-6 md:flex-row md:justify-between">
+        <div className="flex flex-col items-center gap-1.5 md:items-start text-center md:text-left">
+          <Link href="/" className="flex items-center gap-2">
+            <div className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-black bg-amber-400 text-black shadow-[1px_1px_0px_#000000]">
+              <span className="font-fredoka text-xs font-black">N</span>
+            </div>
+            <span className="font-fredoka text-xl font-black tracking-tight text-black dark:text-white">
+              nexus<span className="text-amber-500">et</span>
+            </span>
           </Link>
+          <p className="font-fredoka text-xs font-semibold text-zinc-600 dark:text-zinc-400">
+            &copy; {new Date().getFullYear()} Nexuset · Sound-first spelling practice for curious young minds.
+          </p>
         </div>
+
+        <nav className="flex items-center gap-4 font-fredoka text-xs font-bold uppercase tracking-wider" aria-label="Footer Navigation">
+          {LEGAL_LINKS.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="text-zinc-600 dark:text-zinc-400 transition-colors hover:text-amber-500"
+            >
+              {link.label}
+            </Link>
+          ))}
+          <Link
+            href="#top"
+            className="inline-flex items-center gap-1 rounded-xl border-2 border-black bg-amber-400 px-3.5 py-1.5 font-fredoka text-xs font-black uppercase text-black shadow-[2px_2px_0px_#000000] transition-all hover:bg-amber-300 active:translate-x-[1px] active:translate-y-[1px]"
+          >
+            Top <ArrowUp className="h-3.5 w-3.5" />
+          </Link>
+        </nav>
       </div>
     </footer>
   )
